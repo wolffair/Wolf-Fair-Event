@@ -14,12 +14,14 @@ button{padding:14px 26px;margin:10px;border:none;border-radius:8px;font-size:16p
 .twitter{background:#1DA1F2;color:white;}
 .form{background:#f5a623;color:black;}
 button:hover{transform:scale(1.05);opacity:0.9;}
+button:disabled{opacity:0.6;cursor:not-allowed;}
 .checkmark{position:absolute;top:-10px;right:-10px;background:green;color:white;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:16px;opacity:0;transition:0.3s;}
 .checkmark.show{opacity:1;}
 .reward{background:#151515;padding:15px;border-radius:10px;margin-top:20px;font-weight:bold;}
 .footer{margin-top:35px;color:#777;font-size:14px;}
 #bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;}
 #all-done{color:#0f0;font-weight:bold;margin-top:15px;display:none;}
+#submitted-msg{color:#0f0;font-weight:bold;margin-top:10px;display:none;}
 </style>
 </head>
 <body>
@@ -47,7 +49,8 @@ button:hover{transform:scale(1.05);opacity:0.9;}
 
 <div class="step">
 <h2>Step 2: Submit Wallet</h2>
-<a href="https://forms.gle/QZGCeAHsLZY52Smt8" target="_blank" id="submit-wallet"><button class="form">📋 Submit Wallet</button></a>
+<button class="form" id="submit-wallet">📋 Submit Wallet</button>
+<p id="submitted-msg">✅ Already submitted!</p>
 </div>
 
 <div class="reward">
@@ -64,7 +67,7 @@ WOLF FAIR • Join the pack & stay ready!
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <script>
-// 3D background
+// 3D Background
 const canvas = document.getElementById('bg-canvas');
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight,0.1,1000);
@@ -96,38 +99,46 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// unik per device
+// Unik per device
 let userId = localStorage.getItem('wolfUserId');
 if(!userId){userId = 'user_'+Math.random().toString(36).substr(2,9); localStorage.setItem('wolfUserId', userId);}
 
-// update centang
+// --- Centang per post ---
 function updateCheck(postId,status){document.getElementById('check'+postId.slice(-1)).classList.toggle('show',status);}
-
-// load status
 db.ref('users/'+userId).once('value').then(snapshot=>{
-  const data=snapshot.val()||{};
-  ['post1','post2','post3'].forEach(id=>{updateCheck(id,data[id]===true);});
-  if(Object.values(data).every(v=>v===true)) document.getElementById('all-done').style.display='block';
+    const data=snapshot.val()||{};
+    ['post1','post2','post3'].forEach(id=>updateCheck(id,data[id]===true));
+    if(Object.values(data).every(v=>v===true)) document.getElementById('all-done').style.display='block';
 });
-
-// klik tombol
 ['post1','post2','post3'].forEach(id=>{
-  const btn=document.getElementById(id);
-  btn.addEventListener('click',()=>{
-    const updates={};
-    updates[id]=true;
-    db.ref('users/'+userId).update(updates);
-    updateCheck(id,true);
-    db.ref('users/'+userId).once('value').then(snapshot=>{
-      const data=snapshot.val();
-      if(Object.values(data).every(v=>v===true)) document.getElementById('all-done').style.display='block';
+    document.getElementById(id).addEventListener('click',()=>{
+        const updates={}; updates[id]=true;
+        db.ref('users/'+userId).update(updates);
+        updateCheck(id,true);
+        db.ref('users/'+userId).once('value').then(snapshot=>{
+            const data=snapshot.val();
+            if(Object.values(data).every(v=>v===true)) document.getElementById('all-done').style.display='block';
+        });
     });
-  });
 });
 
-// submit wallet
-document.getElementById('submit-wallet').addEventListener('click', function(){
+// --- Submit Wallet sekali per device ---
+const submitBtn = document.getElementById('submit-wallet');
+const submittedMsg = document.getElementById('submitted-msg');
+
+db.ref('submitted/'+userId).once('value').then(snapshot=>{
+    if(snapshot.exists()){
+        submitBtn.disabled=true;
+        submittedMsg.style.display='block';
+    }
+});
+
+submitBtn.addEventListener('click',function(){
+    submitBtn.disabled=true;
+    submittedMsg.style.display='block';
+    db.ref('submitted/'+userId).set(true);
     alert("✅ Wallet submitted! You will receive $WOLF tokens once the launch occurs.");
+    window.open('https://forms.gle/QZGCeAHsLZY52Smt8','_blank');
 });
 </script>
 </body>
