@@ -1,61 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wolf Fair</title>
+<meta charset="UTF-8">
+<title>WOLF FAIR Giveaway</title>
 
 <style>
 
 body{
-margin:0;
-font-family:Arial;
-background:linear-gradient(135deg,#020617,#0f172a);
+background: radial-gradient(circle at top,#1a1a1a,#000000);
+font-family: Arial, sans-serif;
 color:white;
 text-align:center;
+padding:40px;
 }
 
 .container{
 max-width:700px;
-margin:50px auto;
+margin:auto;
+background:#0f0f0f;
 padding:40px;
-background:#1e293b;
-border-radius:20px;
+border-radius:15px;
+box-shadow:0 0 25px rgba(255,215,0,0.2);
 }
 
 h1{
-color:#facc15;
+font-size:40px;
+color:#f5a623;
+}
+
+.subtitle{
+color:#aaa;
+margin-bottom:30px;
+}
+
+.step{
+margin:25px 0;
 }
 
 button{
-background:#facc15;
+padding:14px 25px;
+margin:10px;
 border:none;
-padding:12px 24px;
-border-radius:10px;
-cursor:pointer;
+border-radius:8px;
+font-size:16px;
 font-weight:bold;
+cursor:pointer;
+}
+
+.twitter{
+background:#1DA1F2;
+color:white;
+}
+
+.form{
+background:#f5a623;
+color:black;
 }
 
 button:hover{
-background:#fde047;
+opacity:0.85;
 }
 
-.progress{
-background:#334155;
-height:20px;
-border-radius:20px;
-margin-top:10px;
-}
-
-.progress-bar{
-background:#facc15;
-height:20px;
-width:0%;
-border-radius:20px;
-}
-
-.section{
+.footer{
 margin-top:30px;
+color:#777;
+font-size:14px;
 }
 
 </style>
@@ -66,71 +75,43 @@ margin-top:30px;
 
 <div class="container">
 
-<h1>🐺 Wolf Fair Early Pack</h1>
+<h1>🐺 WOLF FAIR</h1>
+<p class="subtitle">Genesis $WOLF Giveaway Event</p>
 
-<p>Join the wolves and earn Wolf Coin.</p>
+<div class="step">
+<h2>Step 1</h2>
+<p>Like & Retweet the event tweet</p>
 
-<div class="section">
+<a href="https://twitter.com/intent/like?tweet_id=ID_TWEET_KAMU" target="_blank">
+<button class="twitter">Like Tweet</button>
+</a>
 
-<h2>Your Wolf Coin</h2>
-
-<h3 id="coin">0</h3>
-
-<button onclick="claim()">Claim Wolf Coin</button>
-
-</div>
-
-<div class="section">
-
-<h2>Pack Progress</h2>
-
-<div class="progress">
-<div class="progress-bar" id="bar"></div>
-</div>
-
-<p id="progressText">0 / 100 Wolves</p>
+<a href="https://twitter.com/intent/retweet?tweet_id=ID_TWEET_KAMU" target="_blank">
+<button class="twitter">Retweet Event</button>
+</a>
 
 </div>
 
+<div class="step">
+<h2>Step 2</h2>
+<p>Submit your Solana Wallet Address</p>
+
+<a href="LINK_GOOGLE_FORM_KAMU" target="_blank">
+<button class="form">Submit Wallet</button>
+</a>
+
 </div>
 
-<script>
+<div class="step">
+<h2>Reward</h2>
+<p>20 lucky winners will receive $WOLF tokens</p>
+</div>
 
-let coin = localStorage.getItem("wolfCoin");
-let wolves = localStorage.getItem("wolves");
+<div class="footer">
+WOLF FAIR • Join the Pack
+</div>
 
-if(coin === null){coin = 0}else{coin = parseInt(coin)}
-if(wolves === null){wolves = 0}else{wolves = parseInt(wolves)}
-
-update()
-
-function claim(){
-
-coin += 10
-wolves += 1
-
-localStorage.setItem("wolfCoin",coin)
-localStorage.setItem("wolves",wolves)
-
-update()
-
-}
-
-function update(){
-
-document.getElementById("coin").innerHTML = coin
-
-let percent = wolves
-
-if(percent > 100){percent = 100}
-
-document.getElementById("bar").style.width = percent + "%"
-
-document.getElementById("progressText").innerHTML = wolves + " / 100 Wolves"
-
-}
-
-</script>
+</div>
 
 </body>
 </html>
