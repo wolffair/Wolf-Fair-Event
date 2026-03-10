@@ -13,8 +13,6 @@ body{
   overflow:hidden;
   padding:0;
 }
-
-/* Container */
 .container{
   position:relative;
   max-width:720px;
@@ -25,19 +23,8 @@ body{
   box-shadow:0 0 30px rgba(255,215,0,0.25);
   z-index:1;
 }
-
-/* Headings */
-h1{
-  font-size:42px;
-  color:#f5a623;
-  letter-spacing:2px;
-}
-.subtitle{
-  color:#aaa;
-  margin-bottom:25px;
-}
-
-/* Description */
+h1{ font-size:42px; color:#f5a623; letter-spacing:2px;}
+.subtitle{ color:#aaa; margin-bottom:25px;}
 .description{
   background:#161616;
   padding:20px;
@@ -46,13 +33,7 @@ h1{
   color:#ccc;
   line-height:1.7;
 }
-
-/* Steps */
-.step{
-  margin:30px 0;
-}
-
-/* Buttons */
+.step{ margin:30px 0; }
 button{
   padding:14px 26px;
   margin:10px;
@@ -64,20 +45,9 @@ button{
   transition:0.3s;
   position:relative;
 }
-.twitter{
-  background:#1DA1F2;
-  color:white;
-}
-.form{
-  background:#f5a623;
-  color:black;
-}
-button:hover{
-  transform:scale(1.05);
-  opacity:0.9;
-}
-
-/* Checkmark */
+.twitter{ background:#1DA1F2; color:white;}
+.form{ background:#f5a623; color:black;}
+button:hover{ transform:scale(1.05); opacity:0.9;}
 .checkmark{
   position:absolute;
   top:-10px;
@@ -92,10 +62,10 @@ button:hover{
   justify-content:center;
   font-weight:bold;
   font-size:16px;
-  display:none;
+  opacity:0;
+  transition:0.3s;
 }
-
-/* Reward */
+.checkmark.show{ opacity:1; }
 .reward{
   background:#151515;
   padding:15px;
@@ -103,38 +73,27 @@ button:hover{
   margin-top:20px;
   font-weight:bold;
 }
-
-/* Footer */
 .footer{
   margin-top:35px;
   color:#777;
   font-size:14px;
 }
-
-/* 3D Canvas Background */
 #bg-canvas{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  z-index:-1;
+  position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1;
 }
+#all-done{ color:#0f0; font-weight:bold; margin-top:15px; display:none; }
 </style>
 </head>
 <body>
 
-<!-- 3D Background -->
 <canvas id="bg-canvas"></canvas>
 
-<div class="container" id="giveaway-container">
-
+<div class="container">
 <h1>🐺 WOLF FAIR</h1>
 <p class="subtitle">Genesis $WOLF Giveaway</p>
 
 <div class="description">
-<p>Complete the steps below for a chance to receive <b>$WOLF tokens</b> directly to your Solana wallet.</p>
-<p>🎁 Total reward: <b>3000 $WOLF</b>. Tokens will be distributed after the launch.</p>
+<p>Complete the steps below for a chance to receive <b>3000 $WOLF tokens</b> directly to your Solana wallet after the launch.</p>
 </div>
 
 <div class="step">
@@ -162,6 +121,7 @@ button:hover{
     </button>
   </a>
 </div>
+<p id="all-done">✅ All steps done! You can now submit your wallet.</p>
 </div>
 
 <div class="step">
@@ -182,7 +142,7 @@ WOLF FAIR • Join the pack & stay ready!
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// 3D Background
+// 3D background
 const canvas = document.getElementById('bg-canvas');
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight,0.1,1000);
@@ -206,31 +166,35 @@ function animate(){
   renderer.render(scene,camera);
 }
 animate();
-
 window.addEventListener('resize',()=>{
   camera.aspect = window.innerWidth/window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth,window.innerHeight);
 });
 
-// Logic checkmark ketika tombol diklik
-['post1','post2','post3'].forEach((id, index)=>{
+// Like & Retweet logic
+const posts = ['post1','post2','post3'];
+function checkAllDone(){
+  if(posts.every(id => localStorage.getItem(id)=='done')){
+    document.getElementById('all-done').style.display='block';
+  }
+}
+posts.forEach((id,index)=>{
   const btn = document.getElementById(id);
   const check = document.getElementById('check'+(index+1));
-  btn.addEventListener('click', function(){
-    check.style.display = 'flex'; // munculkan centang
-    localStorage.setItem(id, 'done');
+  btn.addEventListener('click',()=>{
+    check.classList.add('show');
+    localStorage.setItem(id,'done');
+    checkAllDone();
   });
-});
-
-// Load status dari localStorage
-['post1','post2','post3'].forEach((id, index)=>{
-  if(localStorage.getItem(id) === 'done'){
-    document.getElementById('check'+(index+1)).style.display = 'flex';
+  // Load status
+  if(localStorage.getItem(id)=='done'){
+    check.classList.add('show');
   }
 });
+checkAllDone();
 
-// Submit wallet
+// Submit Wallet
 document.getElementById('submit-wallet').addEventListener('click', function(){
     alert("✅ Wallet submitted! You will receive $WOLF tokens once the launch occurs.");
 });
