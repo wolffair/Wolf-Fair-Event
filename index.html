@@ -143,10 +143,10 @@ WOLF FAIR • Join the pack & stay ready!
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
 <script>
-// 3D background
+// 3D Background
 const canvas = document.getElementById('bg-canvas');
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight,0.1,1000);
@@ -178,19 +178,23 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// User Solana wallet
-let userWallet = prompt("Enter your Solana Wallet (Phantom)");
+// Simpan centang per user berdasarkan ID unik (misal: user login via cookie)
+let userId = localStorage.getItem('wolfUserId');
+if(!userId){
+  userId = 'user_' + Math.random().toString(36).substr(2,9);
+  localStorage.setItem('wolfUserId', userId);
+}
 
 // Update centang
 function updateCheck(postId, status){
-  document.getElementById(postId+'-check').classList.toggle('show', status);
+  document.getElementById('check'+postId.slice(-1)).classList.toggle('show', status);
 }
 
 // Load status dari Firebase
-db.ref('users/' + userWallet).once('value').then(snapshot=>{
+db.ref('users/' + userId).once('value').then(snapshot=>{
   const data = snapshot.val() || {};
   ['post1','post2','post3'].forEach(id=>{
-    updateCheck(id, data[id] === true);
+    updateCheck(id, data[id]===true);
   });
   if(Object.values(data).every(v=>v===true)) document.getElementById('all-done').style.display='block';
 });
@@ -201,10 +205,9 @@ db.ref('users/' + userWallet).once('value').then(snapshot=>{
   btn.addEventListener('click', ()=>{
     const updates = {};
     updates[id] = true;
-    db.ref('users/' + userWallet).update(updates);
+    db.ref('users/' + userId).update(updates);
     updateCheck(id, true);
-    // cek semua done
-    db.ref('users/' + userWallet).once('value').then(snapshot=>{
+    db.ref('users/' + userId).once('value').then(snapshot=>{
       const data = snapshot.val();
       if(Object.values(data).every(v=>v===true)) document.getElementById('all-done').style.display='block';
     });
