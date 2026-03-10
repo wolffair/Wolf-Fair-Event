@@ -85,14 +85,6 @@ button:hover{
   font-weight:bold;
 }
 
-/* Countdown */
-.countdown{
-  font-size:24px;
-  margin-top:20px;
-  color:#00ffff;
-  font-weight:bold;
-}
-
 /* Footer */
 .footer{
   margin-top:35px;
@@ -152,9 +144,6 @@ button:hover{
 <p>3000 $WOLF tokens will be distributed among winners!</p>
 </div>
 
-<!-- Countdown -->
-<div class="countdown" id="countdown">⏳ Giveaway starts in: 07h 00m 00s</div>
-
 <div class="footer">
 WOLF FAIR • Join the pack & stay ready!
 </div>
@@ -191,28 +180,6 @@ window.addEventListener('resize',()=>{
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth,window.innerHeight);
 });
-</script>
-
-<script>
-// Countdown Timer - 1 hours
-const giveawayDate = new Date();
-giveawayDate.setHours(giveawayDate.getHours()+1);
-
-const countdownEl = document.getElementById('countdown');
-function updateCountdown(){
-  const now = new Date();
-  const diff = giveawayDate - now;
-  if(diff<=0){
-    countdownEl.innerHTML = "🎉 Giveaway Started! 3000 $WOLF tokens up for grabs!";
-    return;
-  }
-  const hours = Math.floor((diff/(1000*60*60))%24);
-  const minutes = Math.floor((diff/(1000*60))%60);
-  const seconds = Math.floor((diff/1000)%60);
-  countdownEl.innerHTML = `⏳ Giveaway starts in: ${hours}h ${minutes}m ${seconds}s`;
-}
-setInterval(updateCountdown, 1000);
-updateCountdown();
 </script>
 
 </body>
