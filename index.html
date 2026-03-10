@@ -1,155 +1,920 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>WOLF FAIR Genesis Giveaway</title>
-
-<style>
-
-body{
-background: radial-gradient(circle at top,#1a1a1a,#000000);
-font-family: Arial, sans-serif;
-color:white;
-text-align:center;
-padding:40px;
-}
-
-.container{
-max-width:720px;
-margin:auto;
-background:#0f0f0f;
-padding:40px;
-border-radius:15px;
-box-shadow:0 0 30px rgba(255,215,0,0.25);
-}
-
-h1{
-font-size:42px;
-color:#f5a623;
-letter-spacing:2px;
-}
-
-.subtitle{
-color:#aaa;
-margin-bottom:25px;
-}
-
-.description{
-background:#161616;
-padding:20px;
-border-radius:12px;
-margin-bottom:30px;
-color:#ccc;
-line-height:1.7;
-}
-
-.step{
-margin:30px 0;
-}
-
-button{
-padding:14px 26px;
-margin:10px;
-border:none;
-border-radius:8px;
-font-size:16px;
-font-weight:bold;
-cursor:pointer;
-transition:0.3s;
-}
-
-.twitter{
-background:#1DA1F2;
-color:white;
-}
-
-.form{
-background:#f5a623;
-color:black;
-}
-
-button:hover{
-transform:scale(1.05);
-opacity:0.9;
-}
-
-.reward{
-background:#151515;
-padding:15px;
-border-radius:10px;
-margin-top:20px;
-}
-
-.footer{
-margin-top:35px;
-color:#777;
-font-size:14px;
-}
-
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZERODAY ($DAY) - The Ultimate Meme Coin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        /* Glitch Effect */
+        .glitch {
+            position: relative;
+            animation: glitch-skew 1s infinite linear alternate-reverse;
+        }
+        
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .glitch::before {
+            left: 2px;
+            text-shadow: -2px 0 #ff00ff;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 5s infinite linear alternate-reverse;
+        }
+        
+        .glitch::after {
+            left: -2px;
+            text-shadow: -2px 0 #00ffff;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim2 5s infinite linear alternate-reverse;
+        }
+        
+        @keyframes glitch-anim {
+            0% { clip: rect(31px, 9999px, 94px, 0); }
+            20% { clip: rect(78px, 9999px, 20px, 0); }
+            40% { clip: rect(12px, 9999px, 6px, 0); }
+            60% { clip: rect(85px, 9999px, 89px, 0); }
+            80% { clip: rect(45px, 9999px, 56px, 0); }
+            100% { clip: rect(23px, 9999px, 12px, 0); }
+        }
+        
+        @keyframes glitch-anim2 {
+            0% { clip: rect(65px, 9999px, 99px, 0); }
+            20% { clip: rect(12px, 9999px, 45px, 0); }
+            40% { clip: rect(78px, 9999px, 23px, 0); }
+            60% { clip: rect(34px, 9999px, 67px, 0); }
+            80% { clip: rect(89px, 9999px, 12px, 0); }
+            100% { clip: rect(56px, 9999px, 34px, 0); }
+        }
+        
+        @keyframes glitch-skew {
+            0% { transform: skew(0deg); }
+            10% { transform: skew(-2deg); }
+            20% { transform: skew(2deg); }
+            30% { transform: skew(0deg); }
+            100% { transform: skew(0deg); }
+        }
+        
+        /* Neon Glow */
+        .neon-text {
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 40px #00ffff;
+        }
+        
+        .neon-border {
+            box-shadow: 0 0 10px #ff00ff, inset 0 0 10px #ff00ff;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #ff00ff, #00ffff);
+            border-radius: 5px;
+        }
+        
+        /* Canvas Container */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        /* Card Hover Effects */
+        .feature-card {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: #00ffff;
+            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.2);
+        }
+        
+        /* Progress Bar Animation */
+        .progress-fill {
+            transition: width 2s ease-out;
+        }
+        
+        /* Pulse Animation */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 0, 255, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(255, 0, 255, 0.8); }
+        }
+        
+        .pulse-btn {
+            animation: pulse-glow 2s infinite;
+        }
+        
+        /* Matrix Rain Effect */
+        .matrix-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+        
+        .matrix-column {
+            position: absolute;
+            top: -100%;
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 14px;
+            animation: matrix-fall linear infinite;
+        }
+        
+        @keyframes matrix-fall {
+            to { transform: translateY(100vh); }
+        }
+        
+        /* Tokenomics Circle */
+        .tokenomics-item {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .tokenomics-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+        }
+        
+        /* Roadmap Timeline */
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, #ff00ff, #00ffff);
+            transform: translateX(-50%);
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: #00ffff;
+            border-radius: 50%;
+            border: 4px solid #0a0a0a;
+            box-shadow: 0 0 20px #00ffff;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .timeline-line {
+                left: 20px;
+            }
+            .timeline-dot {
+                left: 20px;
+            }
+        }
+        
+        /* Countdown Timer */
+        .countdown-digit {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Floating Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .float-anim {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="container">
+    <!-- 3D Background Canvas -->
+    <div id="canvas-container"></div>
 
-<h1>🐺 WOLF FAIR</h1>
-<p class="subtitle">Genesis $WOLF Giveaway</p>
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <span class="font-orbitron text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
+                        ZERODAY
+                    </span>
+                    <span class="ml-2 text-xs bg-purple-600 px-2 py-1 rounded">$DAY</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#about" class="hover:text-cyan-400 transition-colors">About</a>
+                    <a href="#tokenomics" class="hover:text-cyan-400 transition-colors">Tokenomics</a>
+                    <a href="#roadmap" class="hover:text-cyan-400 transition-colors">Roadmap</a>
+                    <a href="#community" class="hover:text-cyan-400 transition-colors">Community</a>
+                </div>
+                <button class="pulse-btn bg-gradient-to-r from-purple-600 to-cyan-600 px-6 py-2 rounded-full font-bold hover:scale-105 transition-transform">
+                    Buy $DAY
+                </button>
+            </div>
+        </div>
+    </nav>
 
-<div class="description">
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
+        <div class="matrix-bg" id="matrix"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <div class="float-anim mb-8">
+                <div class="w-32 h-32 mx-auto bg-gradient-to-br from-purple-600 to-cyan-600 rounded-full flex items-center justify-center mb-6 neon-border">
+                    <span class="font-orbitron text-4xl font-bold">0DAY</span>
+                </div>
+            </div>
+            
+            <h1 class="font-orbitron text-5xl md:text-7xl lg:text-8xl font-black mb-6 glitch" data-text="ZERODAY">
+                ZERODAY
+            </h1>
+            
+            <p class="text-xl md:text-2xl text-gray-300 mb-4 max-w-3xl mx-auto">
+                The Exploit You Actually Want. First-Mover Advantage in Meme Warfare.
+            </p>
+            
+            <div class="flex flex-wrap justify-center gap-4 mb-12">
+                <span class="px-4 py-2 bg-red-500/20 border border-red-500 rounded-full text-red-400 text-sm">No Utility</span>
+                <span class="px-4 py-2 bg-yellow-500/20 border border-yellow-500 rounded-full text-yellow-400 text-sm">Pure Speculation</span>
+                <span class="px-4 py-2 bg-green-500/20 border border-green-500 rounded-full text-green-400 text-sm">100% Community</span>
+            </div>
 
-<p>
-Welcome to the <b>WOLF FAIR Genesis Event</b>.
-This giveaway is created for early supporters of the WOLF community.
-</p>
+            <!-- Countdown -->
+            <div class="grid grid-cols-4 gap-4 max-w-2xl mx-auto mb-12">
+                <div class="countdown-digit rounded-lg p-4">
+                    <div class="font-orbitron text-3xl md:text-4xl font-bold text-cyan-400" id="days">00</div>
+                    <div class="text-xs text-gray-400">DAYS</div>
+                </div>
+                <div class="countdown-digit rounded-lg p-4">
+                    <div class="font-orbitron text-3xl md:text-4xl font-bold text-cyan-400" id="hours">00</div>
+                    <div class="text-xs text-gray-400">HOURS</div>
+                </div>
+                <div class="countdown-digit rounded-lg p-4">
+                    <div class="font-orbitron text-3xl md:text-4xl font-bold text-cyan-400" id="minutes">00</div>
+                    <div class="text-xs text-gray-400">MINUTES</div>
+                </div>
+                <div class="countdown-digit rounded-lg p-4">
+                    <div class="font-orbitron text-3xl md:text-4xl font-bold text-cyan-400" id="seconds">00</div>
+                    <div class="text-xs text-gray-400">SECONDS</div>
+                </div>
+            </div>
 
-<p>
-Participants who complete the steps below will have a chance to receive
-<b>$WOLF tokens</b> directly to their Solana wallet.
-</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button class="pulse-btn bg-gradient-to-r from-purple-600 to-cyan-600 px-8 py-4 rounded-full font-bold text-lg hover:scale-105 transition-transform flex items-center justify-center gap-2">
+                    <span>🚀 Buy on Uniswap</span>
+                </button>
+                <button class="border border-cyan-500 px-8 py-4 rounded-full font-bold text-lg hover:bg-cyan-500/10 transition-colors flex items-center justify-center gap-2">
+                    <span>📊 View Chart</span>
+                </button>
+            </div>
 
-<p>
-🎁 Winners will receive <b>random amounts of $WOLF</b>.
-The selection will be done randomly after the event ends.
-</p>
+            <!-- Contract Address -->
+            <div class="mt-8 p-4 bg-white/5 rounded-lg max-w-2xl mx-auto border border-white/10">
+                <div class="text-sm text-gray-400 mb-2">Contract Address</div>
+                <div class="flex items-center justify-center gap-2 font-mono text-sm md:text-base break-all">
+                    <span id="contract">0xDAY...42069</span>
+                    <button onclick="copyContract()" class="p-2 hover:bg-white/10 rounded transition-colors">
+                        📋
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<p>
-Join the pack and become one of the early holders of <b>$WOLF</b>.
-</p>
+    <!-- Stats Section -->
+    <section class="py-20 border-y border-white/10 bg-black/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div>
+                    <div class="font-orbitron text-3xl md:text-4xl font-bold text-purple-400">$2.4M</div>
+                    <div class="text-gray-400 mt-2">Market Cap</div>
+                </div>
+                <div>
+                    <div class="font-orbitron text-3xl md:text-4xl font-bold text-cyan-400">12.5K</div>
+                    <div class="text-gray-400 mt-2">Holders</div>
+                </div>
+                <div>
+                    <div class="font-orbitron text-3xl md:text-4xl font-bold text-pink-400">$890K</div>
+                    <div class="text-gray-400 mt-2">Liquidity</div>
+                </div>
+                <div>
+                    <div class="font-orbitron text-3xl md:text-4xl font-bold text-green-400">0%</div>
+                    <div class="text-gray-400 mt-2">Tax</div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-</div>
+    <!-- About Section -->
+    <section id="about" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="font-orbitron text-4xl md:text-5xl font-bold mb-6">
+                        What is <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">ZERODAY?</span>
+                    </h2>
+                    <div class="space-y-4 text-gray-300 text-lg">
+                        <p>
+                            ZERODAY adalah exploit terhadap sistem keuangan tradisional. Tidak ada tim, tidak ada roadmap palsu, tidak ada janji kosong.
+                        </p>
+                        <p>
+                            Launch fair. Liquidity burned. Contract renounced. 100% supply masuk ke Uniswap pada hari pertama.
+                        </p>
+                        <p class="text-cyan-400 font-semibold">
+                            "Di dunia keamanan siber, zeroday adalah exploit yang belum diketahui. Di dunia crypto, ZERODAY adalah kesempatan yang belum dilihat orang banyak."
+                        </p>
+                    </div>
+                    
+                    <div class="mt-8 grid grid-cols-2 gap-4">
+                        <div class="p-4 bg-white/5 rounded-lg border border-white/10">
+                            <div class="text-2xl mb-2">🔥</div>
+                            <div class="font-bold">LP Burned</div>
+                            <div class="text-sm text-gray-400">Forever locked</div>
+                        </div>
+                        <div class="p-4 bg-white/5 rounded-lg border border-white/10">
+                            <div class="text-2xl mb-2">🛡️</div>
+                            <div class="font-bold">Contract Renounced</div>
+                            <div class="text-sm text-gray-400">No admin keys</div>
+                        </div>
+                        <div class="p-4 bg-white/5 rounded-lg border border-white/10">
+                            <div class="text-2xl mb-2">⚡</div>
+                            <div class="font-bold">0% Tax</div>
+                            <div class="text-sm text-gray-400">Pure trading</div>
+                        </div>
+                        <div class="p-4 bg-white/5 rounded-lg border border-white/10">
+                            <div class="text-2xl mb-2">🎯</div>
+                            <div class="font-bold">Fair Launch</div>
+                            <div class="text-sm text-gray-400">No presale</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <div class="absolute inset-0 bg-gradient-to-r from-purple-600 to-cyan-600 rounded-2xl blur-3xl opacity-30"></div>
+                    <div class="relative bg-black/50 border border-white/10 rounded-2xl p-8 backdrop-blur-sm">
+                        <h3 class="font-orbitron text-2xl font-bold mb-6 text-center">Why $DAY?</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-4">
+                                <div class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center flex-shrink-0">1</div>
+                                <div>
+                                    <div class="font-bold">Narrative Kuat</div>
+                                    <div class="text-sm text-gray-400">Konsep zeroday resonate dengan crypto native dan tech enthusiasts</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-8 h-8 bg-cyan-600 rounded-full flex items-center justify-center flex-shrink-0">2</div>
+                                <div>
+                                    <div class="font-bold">Community First</div>
+                                    <div class="text-sm text-gray-400">Tidak ada alokasi tim = tidak ada dump dari developer</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-8 h-8 bg-pink-600 rounded-full flex items-center justify-center flex-shrink-0">3</div>
+                                <div>
+                                    <div class="font-bold">Meme Potential</div>
+                                    <div class="text-sm text-gray-400">Visual dan branding yang kuat untuk viral marketing</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<div class="step">
+    <!-- Tokenomics Section -->
+    <section id="tokenomics" class="py-24 bg-black/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="font-orbitron text-4xl md:text-5xl font-bold text-center mb-16">
+                Token<span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">nomics</span>
+            </h2>
 
-<h2>Step 1</h2>
-<p>Like and Retweet the official event post</p>
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <!-- Chart Visualization -->
+                <div class="relative h-96 flex items-center justify-center">
+                    <svg viewBox="0 0 200 200" class="w-full h-full max-w-md transform -rotate-90">
+                        <!-- Background Circle -->
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="#1a1a1a" stroke-width="20"/>
+                        
+                        <!-- Liquidity Pool 80% -->
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="#8b5cf6" stroke-width="20"
+                                stroke-dasharray="402 502" stroke-dashoffset="0" stroke-linecap="round"
+                                class="progress-fill" style="transition-delay: 0.2s"/>
+                        
+                        <!-- Marketing 15% -->
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="#06b6d4" stroke-width="20"
+                                stroke-dasharray="75 502" stroke-dashoffset="-402" stroke-linecap="round"
+                                class="progress-fill" style="transition-delay: 0.4s"/>
+                        
+                        <!-- Development 5% -->
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="#ec4899" stroke-width="20"
+                                stroke-dasharray="25 502" stroke-dashoffset="-477" stroke-linecap="round"
+                                class="progress-fill" style="transition-delay: 0.6s"/>
+                    </svg>
+                    
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="text-center">
+                            <div class="font-orbitron text-3xl font-bold">1B</div>
+                            <div class="text-sm text-gray-400">Total Supply</div>
+                        </div>
+                    </div>
+                </div>
 
-<a href="https://twitter.com/intent/like?tweet_id=ID_TWEET_KAMU" target="_blank">
-<button class="twitter">👍 Like Tweet</button>
-</a>
+                <!-- Distribution Details -->
+                <div class="space-y-6">
+                    <div class="tokenomics-item p-6 bg-white/5 rounded-lg border border-white/10 hover:border-purple-500 transition-colors">
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="flex items-center gap-3">
+                                <div class="w-4 h-4 bg-purple-500 rounded-full"></div>
+                                <span class="font-bold text-lg">Liquidity Pool</span>
+                            </div>
+                            <span class="font-orbitron text-2xl font-bold text-purple-400">80%</span>
+                        </div>
+                        <div class="w-full bg-gray-800 rounded-full h-2 mb-2">
+                            <div class="bg-purple-500 h-2 rounded-full" style="width: 80%"></div>
+                        </div>
+                        <p class="text-sm text-gray-400">Locked forever di Uniswap. Tidak bisa di-pull.</p>
+                    </div>
 
-<a href="https://twitter.com/intent/retweet?tweet_id=ID_TWEET_KAMU" target="_blank">
-<button class="twitter">🔁 Retweet Event</button>
-</a>
+                    <div class="tokenomics-item p-6 bg-white/5 rounded-lg border border-white/10 hover:border-cyan-500 transition-colors">
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="flex items-center gap-3">
+                                <div class="w-4 h-4 bg-cyan-500 rounded-full"></div>
+                                <span class="font-bold text-lg">Marketing & CEX</span>
+                            </div>
+                            <span class="font-orbitron text-2xl font-bold text-cyan-400">15%</span>
+                        </div>
+                        <div class="w-full bg-gray-800 rounded-full h-2 mb-2">
+                            <div class="bg-cyan-500 h-2 rounded-full" style="width: 15%"></div>
+                        </div>
+                        <p class="text-sm text-gray-400">Untuk listing exchange dan kampanye marketing.</p>
+                    </div>
 
-</div>
+                    <div class="tokenomics-item p-6 bg-white/5 rounded-lg border border-white/10 hover:border-pink-500 transition-colors">
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="flex items-center gap-3">
+                                <div class="w-4 h-4 bg-pink-500 rounded-full"></div>
+                                <span class="font-bold text-lg">Development</span>
+                            </div>
+                            <span class="font-orbitron text-2xl font-bold text-pink-400">5%</span>
+                        </div>
+                        <div class="w-full bg-gray-800 rounded-full h-2 mb-2">
+                            <div class="bg-pink-500 h-2 rounded-full" style="width: 5%"></div>
+                        </div>
+                        <p class="text-sm text-gray-400">Vesting 12 bulan untuk pengembangan ekosistem.</p>
+                    </div>
+                </div>
+            </div>
 
-<div class="step">
+            <!-- Token Details -->
+            <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="p-6 bg-gradient-to-br from-purple-900/20 to-transparent rounded-lg border border-purple-500/20 text-center">
+                    <div class="text-gray-400 mb-2">Token Name</div>
+                    <div class="font-orbitron text-xl font-bold">ZERODAY</div>
+                </div>
+                <div class="p-6 bg-gradient-to-br from-cyan-900/20 to-transparent rounded-lg border border-cyan-500/20 text-center">
+                    <div class="text-gray-400 mb-2">Symbol</div>
+                    <div class="font-orbitron text-xl font-bold">$DAY</div>
+                </div>
+                <div class="p-6 bg-gradient-to-br from-pink-900/20 to-transparent rounded-lg border border-pink-500/20 text-center">
+                    <div class="text-gray-400 mb-2">Network</div>
+                    <div class="font-orbitron text-xl font-bold">Ethereum</div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<h2>Step 2</h2>
-<p>Submit your Solana wallet address</p>
+    <!-- Roadmap Section -->
+    <section id="roadmap" class="py-24 relative overflow-hidden">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="font-orbitron text-4xl md:text-5xl font-bold text-center mb-16">
+                Road<span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">map</span>
+            </h2>
 
-<a href="LINK_GOOGLE_FORM_KAMU" target="_blank">
-<button class="form">📋 Submit Wallet</button>
-</a>
+            <div class="relative">
+                <div class="timeline-line"></div>
 
-</div>
+                <!-- Phase 1 -->
+                <div class="relative mb-16 md:mb-24">
+                    <div class="timeline-dot" style="top: 0;"></div>
+                    <div class="md:w-1/2 md:ml-auto md:pl-12 ml-12">
+                        <div class="feature-card p-6 bg-white/5 rounded-lg backdrop-blur-sm">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm font-bold">COMPLETED</span>
+                                <span class="font-orbitron text-xl font-bold text-purple-400">Phase 1</span>
+                            </div>
+                            <h3 class="text-xl font-bold mb-3">Launch & Foundation</h3>
+                            <ul class="space-y-2 text-gray-300">
+                                <li class="flex items-center gap-2"><span class="text-green-400">✓</span> Token creation & deployment</li>
+                                <li class="flex items-center gap-2"><span class="text-green-400">✓</span> Liquidity provision & burn</li>
+                                <li class="flex items-center gap-2"><span class="text-green-400">✓</span> Website launch</li>
+                                <li class="flex items-center gap-2"><span class="text-green-400">✓</span> Social media setup</li>
+                                <li class="flex items-center gap-2"><span class="text-green-400">✓</span> Initial marketing push</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
-<div class="reward">
-<h2>🎁 Reward</h2>
-<p>20 lucky participants will receive random $WOLF tokens</p>
-</div>
+                <!-- Phase 2 -->
+                <div class="relative mb-16 md:mb-24">
+                    <div class="timeline-dot" style="top: 0; background: #8b5cf6;"></div>
+                    <div class="md:w-1/2 md:mr-auto md:pr-12 ml-12 md:ml-0">
+                        <div class="feature-card p-6 bg-white/5 rounded-lg backdrop-blur-sm">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm font-bold">IN PROGRESS</span>
+                                <span class="font-orbitron text-xl font-bold text-cyan-400">Phase 2</span>
+                            </div>
+                            <h3 class="text-xl font-bold mb-3">Growth & Expansion</h3>
+                            <ul class="space-y-2 text-gray-300">
+                                <li class="flex items-center gap-2"><span class="text-yellow-400">○</span> CoinGecko listing</li>
+                                <li class="flex items-center gap-2"><span class="text-yellow-400">○</span> CoinMarketCap listing</li>
+                                <li class="flex items-center gap-2"><span class="text-yellow-400">○</span> Influencer partnerships</li>
+                                <li class="flex items-center gap-2"><span class="text-yellow-400">○</span> Community contests</li>
+                                <li class="flex items-center gap-2"><span class="text-yellow-400">○</span> 10,000+ holders</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
-<div class="footer">
-WOLF FAIR • Join the
+                <!-- Phase 3 -->
+                <div class="relative mb-16 md:mb-24">
+                    <div class="timeline-dot" style="top: 0; background: #ec4899;"></div>
+                    <div class="md:w-1/2 md:ml-auto md:pl-12 ml-12">
+                        <div class="feature-card p-6 bg-white/5 rounded-lg backdrop-blur-sm">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="px-3 py-1 bg-gray-500/20 text-gray-400 rounded-full text-sm font-bold">UPCOMING</span>
+                                <span class="font-orbitron text-xl font-bold text-pink-400">Phase 3</span>
+                            </div>
+                            <h3 class="text-xl font-bold mb-3">CEX Listings</h3>
+                            <ul class="space-y-2 text-gray-300">
+                                <li class="flex items-center gap-2"><span class="text-gray-500">○</span> Tier-2 CEX listings</li>
+                                <li class="flex items-center gap-2"><span class="text-gray-500">○</span> Marketing campaign expansion</li>
+                                <li class="flex items-center gap-2"><span class="text-gray-500">○</span> NFT collection launch</li>
+                                <li class="flex items-center gap-2"><span class="text-gray-500">○</span> 50,000+ holders</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 4 -->
+                <div class="relative">
+                    <div class="timeline-dot" style="top: 0; background: #fbbf24;"></div>
+                    <div class="md:w-1/2 md:mr-auto md:pr-12 ml-12 md:ml-0">
+                        <div class="feature-card p-6 bg-white/5 rounded-lg backdrop-blur-sm">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="px-3 py-1 bg-gray-500/20 text-gray-400 rounded-full text-sm font-bold">FUTURE</span>
+                                <span class="font-orbitron text-xl font-bold text-yellow-400">Phase 4</span>
+                            </div>
+                            <h3 class="text-xl font-bold mb-3">Global Domination</h3>
+                            <ul class="space-y-2 text-gray-300">
+                                <li class="flex items-center gap-2"><span class="text-gray-500">○</span> Tier-1 CEX listings</li>
+                                <li class="flex items-center gap-2"><span class="text-gray-500">○</span> Cross-chain expansion</li>
+                                <li class="flex items-center gap-2"><span class="text-gray-500">○</span> Merchandise store</li>
+                                <li class="flex items-center gap-2"><span class="text-gray-500">○</span> 100,000+ holders</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Section -->
+    <section id="community" class="py-24 bg-gradient-to-b from-black to-purple-900/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="font-orbitron text-4xl md:text-5xl font-bold mb-6">
+                Join the <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">Exploit</span>
+            </h2>
+            <p class="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
+                Komunitas adalah kekuatan ZERODAY. Tidak ada admin, tidak ada leader. Pure decentralized movement.
+            </p>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto mb-12">
+                <a href="#" class="group p-6 bg-white/5 rounded-lg border border-white/10 hover:border-purple-500 transition-all hover:scale-105">
+                    <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">💬</div>
+                    <div class="font-bold">Telegram</div>
+                    <div class="text-sm text-gray-400">8.5K Members</div>
+                </a>
+                <a href="#" class="group p-6 bg-white/5 rounded-lg border border-white/10 hover:border-cyan-500 transition-all hover:scale-105">
+                    <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">🐦</div>
+                    <div class="font-bold">Twitter/X</div>
+                    <div class="text-sm text-gray-400">15K Followers</div>
+                </a>
+                <a href="#" class="group p-6 bg-white/5 rounded-lg border border-white/10 hover:border-pink-500 transition-all hover:scale-105">
+                    <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">🎮</div>
+                    <div class="font-bold">Discord</div>
+                    <div class="text-sm text-gray-400">5K Members</div>
+                </a>
+                <a href="#" class="group p-6 bg-white/5 rounded-lg border border-white/10 hover:border-yellow-500 transition-all hover:scale-105">
+                    <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">📊</div>
+                    <div class="font-bold">DexTools</div>
+                    <div class="text-sm text-gray-400">Live Chart</div>
+                </a>
+            </div>
+
+            <!-- Newsletter -->
+            <div class="max-w-xl mx-auto p-8 bg-white/5 rounded-2xl border border-white/10">
+                <h3 class="font-orbitron text-2xl font-bold mb-4">Get Zero Intel</h3>
+                <p class="text-gray-400 mb-6">Dapatkan update eksklusif dan alpha leaks langsung ke inbox.</p>
+                <form class="flex gap-3" onsubmit="event.preventDefault(); alert('Terdaftar! (Demo)');">
+                    <input type="email" placeholder="Enter your email" class="flex-1 px-4 py-3 bg-black/50 border border-white/20 rounded-lg focus:border-purple-500 focus:outline-none text-white">
+                    <button type="submit" class="px-6 py-3 bg-gradient-to-r from-purple-600 to-cyan-600 rounded-lg font-bold hover:opacity-90 transition-opacity">
+                        Subscribe
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-white/10 bg-black">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center">
+                    <span class="font-orbitron text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
+                        ZERODAY
+                    </span>
+                    <span class="ml-2 text-xs bg-purple-600 px-2 py-1 rounded">$DAY</span>
+                </div>
+                
+                <div class="flex gap-6 text-sm text-gray-400">
+                    <a href="#" class="hover:text-white transition-colors">Whitepaper</a>
+                    <a href="#" class="hover:text-white transition-colors">Audit</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms</a>
+                    <a href="#" class="hover:text-white transition-colors">Disclaimer</a>
+                </div>
+
+                <div class="text-sm text-gray-500">
+                    © 2026 ZERODAY. All rights exploited.
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-8 border-t border-white/5 text-center text-xs text-gray-600 max-w-3xl mx-auto">
+                <p class="mb-2">
+                    <strong>Disclaimer:</strong> $DAY adalah meme coin dengan utilitas nol. Ini bukan instrumen investasi. 
+                    Harga bisa sangat volatil dan Anda bisa kehilangan seluruh modal. 
+                    Cryptocurrency mungkin ilegal di yurisdiksi Anda. Lakukan riset sendiri (DYOR).
+                </p>
+                <p>
+                    Smart contract belum diaudit. Risiko rug pull, hack, atau bug tetap ada meskipun contract renounced. 
+                    Tim tidak bertanggung jawab atas kehilangan dana.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 3D Background Animation
+        const initThreeJS = () => {
+            const container = document.getElementById('canvas-container');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+
+            // Create particles
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 1500;
+            const posArray = new Float32Array(particlesCount * 3);
+            const colorArray = new Float32Array(particlesCount * 3);
+
+            for(let i = 0; i < particlesCount * 3; i += 3) {
+                posArray[i] = (Math.random() - 0.5) * 50;
+                posArray[i+1] = (Math.random() - 0.5) * 50;
+                posArray[i+2] = (Math.random() - 0.5) * 50;
+                
+                // Purple to cyan gradient colors
+                colorArray[i] = Math.random() * 0.5 + 0.5;     // R
+                colorArray[i+1] = Math.random() * 0.5;         // G
+                colorArray[i+2] = Math.random() * 0.5 + 0.5;   // B
+            }
+
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
+
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.1,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending
+            });
+
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+
+            camera.position.z = 30;
+
+            // Animation loop
+            let mouseX = 0;
+            let mouseY = 0;
+
+            document.addEventListener('mousemove', (event) => {
+                mouseX = event.clientX / window.innerWidth - 0.5;
+                mouseY = event.clientY / window.innerHeight - 0.5;
+            });
+
+            const animate = () => {
+                requestAnimationFrame(animate);
+
+                particlesMesh.rotation.y += 0.001;
+                particlesMesh.rotation.x += 0.0005;
+                
+                // Mouse interaction
+                particlesMesh.rotation.y += mouseX * 0.05;
+                particlesMesh.rotation.x += mouseY * 0.05;
+
+                renderer.render(scene, camera);
+            };
+
+            animate();
+
+            // Resize handler
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        };
+
+        // Matrix Rain Effect
+        const initMatrix = () => {
+            const container = document.getElementById('matrix');
+            const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            
+            const createColumn = () => {
+                const column = document.createElement('div');
+                column.className = 'matrix-column';
+                column.style.left = Math.random() * 100 + '%';
+                column.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                column.style.opacity = Math.random() * 0.5 + 0.1;
+                
+                let text = '';
+                for(let i = 0; i < 20; i++) {
+                    text += chars[Math.floor(Math.random() * chars.length)] + '<br>';
+                }
+                column.innerHTML = text;
+                
+                container.appendChild(column);
+                
+                setTimeout(() => column.remove(), 5000);
+            };
+
+            setInterval(createColumn, 100);
+        };
+
+        // Countdown Timer
+        const initCountdown = () => {
+            const launchDate = new Date();
+            launchDate.setDate(launchDate.getDate() + 7); // 7 days from now
+
+            const updateCountdown = () => {
+                const now = new Date().getTime();
+                const distance = launchDate - now;
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById('days').textContent = String(days).padStart(2, '0');
+                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+            };
+
+            setInterval(updateCountdown, 1000);
+            updateCountdown();
+        };
+
+        // Copy Contract Address
+        window.copyContract = () => {
+            const contract = '0xDAY000000000000000000000000000000042069';
+            navigator.clipboard.writeText(contract).then(() => {
+                const btn = event.target;
+                const original = btn.textContent;
+                btn.textContent = '✓';
+                setTimeout(() => btn.textContent = original, 2000);
+            });
+        };
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if(target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                    
+                    // Animate progress bars
+                    if(entry.target.querySelector('.progress-fill')) {
+                        entry.target.querySelectorAll('.progress-fill').forEach(el => {
+                            el.style.width = el.getAttribute('stroke-dasharray').split(' ')[0] + 'px';
+                        });
+                    }
+                }
+            });
+        }, observerOptions);
+
+        // Initialize
+        window.addEventListener('load', () => {
+            initThreeJS();
+            initMatrix();
+            initCountdown();
+            
+            // Observe elements
+            document.querySelectorAll('.feature-card, .tokenomics-item').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'all 0.6s ease-out';
+                observer.observe(el);
+            });
+        });
+
+        // Glitch effect randomization
+        setInterval(() => {
+            const glitch = document.querySelector('.glitch');
+            if(glitch && Math.random() > 0.9) {
+                glitch.style.animation = 'none';
+                setTimeout(() => {
+                    glitch.style.animation = '';
+                }, 100);
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+Edit nama Koin jadi "Wolf Fair" $WOLF jaringan ganti solana
