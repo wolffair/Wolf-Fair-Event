@@ -13,6 +13,7 @@ body{
   overflow:hidden;
   padding:0;
 }
+
 /* Container */
 .container{
   position:relative;
@@ -24,6 +25,7 @@ body{
   box-shadow:0 0 30px rgba(255,215,0,0.25);
   z-index:1;
 }
+
 /* Headings */
 h1{
   font-size:42px;
@@ -34,6 +36,7 @@ h1{
   color:#aaa;
   margin-bottom:25px;
 }
+
 /* Description */
 .description{
   background:#161616;
@@ -43,10 +46,12 @@ h1{
   color:#ccc;
   line-height:1.7;
 }
+
 /* Steps */
 .step{
   margin:30px 0;
 }
+
 /* Buttons */
 button{
   padding:14px 26px;
@@ -70,13 +75,16 @@ button:hover{
   transform:scale(1.05);
   opacity:0.9;
 }
+
 /* Reward */
 .reward{
   background:#151515;
   padding:15px;
   border-radius:10px;
   margin-top:20px;
+  font-weight:bold;
 }
+
 /* Countdown */
 .countdown{
   font-size:24px;
@@ -84,12 +92,14 @@ button:hover{
   color:#00ffff;
   font-weight:bold;
 }
+
 /* Footer */
 .footer{
   margin-top:35px;
   color:#777;
   font-size:14px;
 }
+
 /* 3D Canvas Background */
 #bg-canvas{
   position:fixed;
@@ -102,17 +112,19 @@ button:hover{
 </style>
 </head>
 <body>
+
 <!-- 3D Background -->
 <canvas id="bg-canvas"></canvas>
 
 <div class="container">
+
 <h1>🐺 WOLF FAIR</h1>
 <p class="subtitle">Genesis $WOLF Giveaway</p>
 
 <div class="description">
 <p>Welcome to the <b>WOLF FAIR Genesis Event</b>. This giveaway is for early supporters of the WOLF community.</p>
 <p>Participants who complete the steps below will have a chance to receive <b>$WOLF tokens</b> directly to their Solana wallet.</p>
-<p>🎁 Winners will share a total of <b>3000 $WOLF</b>. Selection will be done randomly after the event ends.</p>
+<p>🎁 Total reward: <b>3000 $WOLF</b>. Winners will be selected randomly after the event ends.</p>
 <p>Join the pack and become one of the early holders of <b>$WOLF</b>.</p>
 </div>
 
@@ -130,18 +142,18 @@ button:hover{
 <div class="step">
 <h2>Step 2</h2>
 <p>Submit your Solana wallet address</p>
-<a href="LINK_GOOGLE_FORM_KAMU" target="_blank">
+<a href="https://forms.gle/QZGCeAHsLZY52Smt8" target="_blank">
 <button class="form">📋 Submit Wallet</button>
 </a>
 </div>
 
 <div class="reward">
 <h2>🎁 Reward</h2>
-<p>20 lucky participants will share a total of <b>3000 $WOLF tokens</b></p>
+<p>3000 $WOLF tokens will be distributed among winners!</p>
 </div>
 
 <!-- Countdown -->
-<div class="countdown" id="countdown">⏳ Giveaway starts in: 00h 00m 00s</div>
+<div class="countdown" id="countdown">⏳ Giveaway starts in: 07h 00m 00s</div>
 
 <div class="footer">
 WOLF FAIR • Join the pack & stay ready!
@@ -182,9 +194,9 @@ window.addEventListener('resize',()=>{
 </script>
 
 <script>
-// Countdown Timer 7 hours
+// Countdown Timer - 1 hours
 const giveawayDate = new Date();
-giveawayDate.setHours(giveawayDate.getHours()+7); // 7 jam dari sekarang
+giveawayDate.setHours(giveawayDate.getHours()+1);
 
 const countdownEl = document.getElementById('countdown');
 function updateCountdown(){
