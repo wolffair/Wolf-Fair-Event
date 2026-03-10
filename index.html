@@ -62,6 +62,7 @@ button{
   font-weight:bold;
   cursor:pointer;
   transition:0.3s;
+  position:relative;
 }
 .twitter{
   background:#1DA1F2;
@@ -74,6 +75,24 @@ button{
 button:hover{
   transform:scale(1.05);
   opacity:0.9;
+}
+
+/* Checkmark */
+.checkmark{
+  position:absolute;
+  top:-10px;
+  right:-10px;
+  background:green;
+  color:white;
+  border-radius:50%;
+  width:24px;
+  height:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  font-size:16px;
+  display:none;
 }
 
 /* Reward */
@@ -114,26 +133,39 @@ button:hover{
 <p class="subtitle">Genesis $WOLF Giveaway</p>
 
 <div class="description">
-<p>Welcome to the <b>WOLF FAIR Genesis Event</b>. This giveaway is for early supporters of the WOLF community.</p>
 <p>Complete the steps below for a chance to receive <b>$WOLF tokens</b> directly to your Solana wallet.</p>
-<p>🎁 Total reward: <b>3000 $WOLF</b>. Winners will be selected randomly, and <b>tokens will be distributed when the launch occurs</b>.</p>
-<p>Join the pack and become one of the early holders of <b>$WOLF</b>!</p>
+<p>🎁 Total reward: <b>3000 $WOLF</b>. Tokens will be distributed after the launch.</p>
 </div>
 
 <div class="step">
-<h2>Step 1</h2>
-<p>Like and Retweet the official event post</p>
-<a href="https://x.com/wolftwofair" target="_blank">
-<button class="twitter">👍 Like Tweet</button>
-</a>
-<a href="https://x.com/wolftwofair" target="_blank">
-<button class="twitter">🔁 Retweet Event</button>
-</a>
+<h2>Step 1: Like & Retweet</h2>
+<p>Click each button below to mark it as done</p>
+
+<div>
+  <a href="https://x.com/i/status/2031240023883059391" target="_blank">
+    <button class="twitter" id="post1">👍 Post 1
+      <span class="checkmark" id="check1">✔</span>
+    </button>
+  </a>
+</div>
+<div>
+  <a href="https://x.com/i/status/2030726023000789156" target="_blank">
+    <button class="twitter" id="post2">👍 Post 2
+      <span class="checkmark" id="check2">✔</span>
+    </button>
+  </a>
+</div>
+<div>
+  <a href="https://x.com/i/status/2030259906629267470" target="_blank">
+    <button class="twitter" id="post3">👍 Post 3
+      <span class="checkmark" id="check3">✔</span>
+    </button>
+  </a>
+</div>
 </div>
 
 <div class="step">
-<h2>Step 2</h2>
-<p>Submit your Solana wallet address</p>
+<h2>Step 2: Submit Wallet</h2>
 <a href="https://forms.gle/QZGCeAHsLZY52Smt8" target="_blank" id="submit-wallet">
 <button class="form">📋 Submit Wallet</button>
 </a>
@@ -141,7 +173,7 @@ button:hover{
 
 <div class="reward">
 <h2>🎁 Reward</h2>
-<p>3000 $WOLF tokens will be distributed among winners <b>once the launch occurs</b>!</p>
+<p>3000 $WOLF tokens will be distributed among winners after launch.</p>
 </div>
 
 <div class="footer">
@@ -181,11 +213,28 @@ window.addEventListener('resize',()=>{
   renderer.setSize(window.innerWidth,window.innerHeight);
 });
 
-// Submit wallet button tetap normal tanpa blokir
+// Logic checkmark ketika tombol diklik
+['post1','post2','post3'].forEach((id, index)=>{
+  const btn = document.getElementById(id);
+  const check = document.getElementById('check'+(index+1));
+  btn.addEventListener('click', function(){
+    check.style.display = 'flex'; // munculkan centang
+    localStorage.setItem(id, 'done');
+  });
+});
+
+// Load status dari localStorage
+['post1','post2','post3'].forEach((id, index)=>{
+  if(localStorage.getItem(id) === 'done'){
+    document.getElementById('check'+(index+1)).style.display = 'flex';
+  }
+});
+
+// Submit wallet
 document.getElementById('submit-wallet').addEventListener('click', function(){
     alert("✅ Wallet submitted! You will receive $WOLF tokens once the launch occurs.");
 });
 </script>
 
-</body> 
+</body>
 </html>
