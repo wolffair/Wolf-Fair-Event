@@ -108,7 +108,7 @@ button:hover{
 <!-- 3D Background -->
 <canvas id="bg-canvas"></canvas>
 
-<div class="container">
+<div class="container" id="giveaway-container">
 
 <h1>🐺 WOLF FAIR</h1>
 <p class="subtitle">Genesis $WOLF Giveaway</p>
@@ -134,7 +134,7 @@ button:hover{
 <div class="step">
 <h2>Step 2</h2>
 <p>Submit your Solana wallet address</p>
-<a href="https://forms.gle/QZGCeAHsLZY52Smt8" target="_blank">
+<a href="https://forms.gle/QZGCeAHsLZY52Smt8" target="_blank" id="submit-wallet">
 <button class="form">📋 Submit Wallet</button>
 </a>
 </div>
@@ -179,6 +179,18 @@ window.addEventListener('resize',()=>{
   camera.aspect = window.innerWidth/window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth,window.innerHeight);
+});
+
+// 1-click Only Logic
+if(localStorage.getItem('giveawayClicked')){
+    document.getElementById('giveaway-container').innerHTML = `
+      <h1>⚠️ Already Claimed</h1>
+      <p>You have already accessed this giveaway. Only one submission per user is allowed.</p>
+    `;
+}
+
+document.getElementById('submit-wallet').addEventListener('click', function(){
+    localStorage.setItem('giveawayClicked','true');
 });
 </script>
 
