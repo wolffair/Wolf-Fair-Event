@@ -1,10 +1,11 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>WOLF FAIR Genesis Giveaway</title>
 <style>
 body{margin:0;font-family:Arial,sans-serif;color:white;text-align:center;background:#000;overflow:hidden;padding:0;}
-.container{position:relative;max-width:720px;margin:50px auto;background:#0f0f0f;padding:40px;border-radius:15px;box-shadow:0 0 30px rgba(255,215,0,0.25);z-index:1;}
+.container{position:relative;max-width:720px;margin:50px auto;background:#0f0f0f;padding:40px;border-radius:15px;box-shadow:0 0 30px rgba(255,215,0,0.25);}
 h1{font-size:42px;color:#f5a623;letter-spacing:2px;}
 .subtitle{color:#aaa;margin-bottom:25px;}
 .description{background:#161616;padding:20px;border-radius:12px;margin-bottom:30px;color:#ccc;line-height:1.7;}
@@ -16,39 +17,59 @@ button:hover{transform:scale(1.05);opacity:0.9;}
 button:disabled{opacity:0.6;cursor:not-allowed;}
 .checkmark{position:absolute;top:-10px;right:-10px;background:green;color:white;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:16px;opacity:0;transition:0.3s;}
 .checkmark.show{opacity:1;}
+input[type=text]{padding:10px 12px;border-radius:8px;border:none;font-size:16px;width:300px;margin-top:10px;}
 .reward{background:#151515;padding:15px;border-radius:10px;margin-top:20px;font-weight:bold;}
 .footer{margin-top:35px;color:#777;font-size:14px;}
 #bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;}
-#all-done{color:#0f0;font-weight:bold;margin-top:15px;display:none;}
-#submitted-msg{color:#0f0;font-weight:bold;margin-top:10px;display:none;}
-#leaderboard{color:#f5a623;margin-top:20px;font-size:16px;}
-@media(max-width:768px){.container{padding:25px;margin:30px auto;} h1{font-size:32px;}}
+#all-done,#submitted-msg,#error-msg,#leaderboard{color:#0f0;font-weight:bold;margin-top:10px;display:none;}
+#leaderboard{color:#f5a623;display:block;margin-top:20px;}
 </style>
 </head>
-<body><canvas id="bg-canvas"></canvas>
+<body>
+
+<canvas id="bg-canvas"></canvas>
 
 <div class="container">
 <h1>🐺 WOLF FAIR</h1>
-<p class="subtitle">Genesis $WOLF Giveaway</p><div class="description">
+<p class="subtitle">Genesis $WOLF Giveaway</p>
+
+<div class="description">
 <p>Complete the steps below for a chance to receive <b>3000 $WOLF tokens</b> directly to your Solana wallet after the launch.</p>
-</div><div class="step">
+</div>
+
+<div class="step">
 <h2>Step 1: Like & Retweet</h2>
 <p>Click each button below to mark it as done</p>
 <div><a href="https://x.com/i/status/2031240023883059391" target="_blank"><button class="twitter" id="post1">👍 Post 1<span class="checkmark" id="check1">✔</span></button></a></div>
 <div><a href="https://x.com/i/status/2030726023000789156" target="_blank"><button class="twitter" id="post2">👍 Post 2<span class="checkmark" id="check2">✔</span></button></a></div>
 <div><a href="https://x.com/i/status/2030259906629267470" target="_blank"><button class="twitter" id="post3">👍 Post 3<span class="checkmark" id="check3">✔</span></button></a></div>
 <p id="all-done">✅ All steps done! You can now submit your wallet.</p>
-</div><div class="step">
+</div>
+
+<div class="step">
 <h2>Step 2: Submit Wallet</h2>
+<input type="text" id="wallet-input" placeholder="Enter your Solana wallet">
+<br>
 <button class="form" id="submit-wallet">📋 Submit Wallet</button>
 <p id="submitted-msg">✅ Already submitted!</p>
-</div><div class="reward">
+<p id="error-msg" style="color:red;">❌ Please complete all steps first!</p>
+</div>
+
+<div class="reward">
 <h2>🎁 Reward</h2>
 <p>3000 $WOLF tokens will be distributed among winners after launch.</p>
 <p id="leaderboard">Total Wallets Submitted: 0</p>
-</div><div class="footer">
+</div>
+
+<div class="footer">
 WOLF FAIR • Join the pack & stay ready!
-</div><script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script><script>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script>
 // 3D Background
 const canvas = document.getElementById('bg-canvas');
 const scene = new THREE.Scene();
@@ -66,4 +87,83 @@ const points = new THREE.Points(geometry, material);
 scene.add(points);
 function animate(){requestAnimationFrame(animate);points.rotation.y+=0.001;points.rotation.x+=0.0005;renderer.render(scene,camera);}
 animate();
-window.addEventListener('resize',()=>{camera.aspect=window.innerWidth/window.inner
+window.addEventListener('resize',()=>{camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();renderer.setSize(window.innerWidth,window.innerHeight);});
+
+// Firebase config
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "SENDER_ID",
+  appId: "APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// Unik per device
+let userId = localStorage.getItem('wolfUserId');
+if(!userId){userId = 'user_'+Math.random().toString(36).substr(2,9); localStorage.setItem('wolfUserId', userId);}
+
+// --- Centang per post ---
+function updateCheck(postId,status){document.getElementById('check'+postId.slice(-1)).classList.toggle('show',status);}
+db.ref('users/'+userId).once('value').then(snapshot=>{
+    const data=snapshot.val()||{};
+    ['post1','post2','post3'].forEach(id=>updateCheck(id,data[id]===true));
+    if(Object.values(data).every(v=>v===true)) document.getElementById('all-done').style.display='block';
+});
+['post1','post2','post3'].forEach(id=>{
+    document.getElementById(id).addEventListener('click',()=>{
+        const updates={}; updates[id]=true;
+        db.ref('users/'+userId).update(updates);
+        updateCheck(id,true);
+        db.ref('users/'+userId).once('value').then(snapshot=>{
+            const data=snapshot.val();
+            if(Object.values(data).every(v=>v===true)) document.getElementById('all-done').style.display='block';
+        });
+    });
+});
+
+// --- Submit Wallet sekali per device ---
+const submitBtn = document.getElementById('submit-wallet');
+const submittedMsg = document.getElementById('submitted-msg');
+const errorMsg = document.getElementById('error-msg');
+const walletInput = document.getElementById('wallet-input');
+
+db.ref('submitted/'+userId).once('value').then(snapshot=>{
+    if(snapshot.exists()){
+        submitBtn.disabled=true;
+        submittedMsg.style.display='block';
+    }
+});
+
+// Update leaderboard
+function updateLeaderboard(){
+    db.ref('submitted').once('value').then(snapshot=>{
+        const count = snapshot.numChildren();
+        document.getElementById('leaderboard').textContent = 'Total Wallets Submitted: '+count;
+    });
+}
+updateLeaderboard();
+
+submitBtn.addEventListener('click',function(){
+    db.ref('users/'+userId).once('value').then(snapshot=>{
+        const data=snapshot.val()||{};
+        if(Object.values(data).every(v=>v===true)){
+            const wallet = walletInput.value.trim();
+            if(wallet.length<32){alert("Enter a valid Solana wallet"); return;}
+            submitBtn.disabled=true;
+            submittedMsg.style.display='block';
+            errorMsg.style.display='none';
+            db.ref('submitted/'+userId).set(wallet);
+            updateLeaderboard();
+            alert("✅ Wallet submitted! You will receive $WOLF tokens once the launch occurs.");
+        } else {
+            errorMsg.style.display='block';
+        }
+    });
+});
+</script>
+</body>
+</html>
