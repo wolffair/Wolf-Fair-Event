@@ -181,18 +181,11 @@ window.addEventListener('resize',()=>{
   renderer.setSize(window.innerWidth,window.innerHeight);
 });
 
-// 1-click Only Logic
-if(localStorage.getItem('giveawayClicked')){
-    document.getElementById('giveaway-container').innerHTML = `
-      <h1>⚠️ Already Claimed</h1>
-      <p>You have already accessed this giveaway. Only one submission per user is allowed.</p>
-    `;
-}
-
+// Submit wallet button tetap normal tanpa blokir
 document.getElementById('submit-wallet').addEventListener('click', function(){
-    localStorage.setItem('giveawayClicked','true');
+    alert("✅ Wallet submitted! You will receive $WOLF tokens once the launch occurs.");
 });
 </script>
 
-</body>
+</body> 
 </html>
