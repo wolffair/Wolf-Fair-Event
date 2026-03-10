@@ -1,98 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>WOLF FAIR Genesis Giveaway</title>
-<style>
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  color:white;
-  text-align:center;
-  /* Background HD: bulan oranye + seri gala emas */
-  background: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
-  background-size: cover;
-  overflow:hidden;
-  padding:0;
-}
-.container{
-  position:relative;
-  max-width:720px;
-  margin:50px auto;
-  background:#0f0f0fcc; /* Sedikit transparan supaya teks lebih menonjol */
-  padding:40px;
-  border-radius:15px;
-}
-h1{font-size:42px;color:#f5a623;}
-.subtitle{color:#aaa;margin-bottom:25px;}
-button{
-  padding:12px 24px;
-  margin:10px;
-  border:none;
-  border-radius:8px;
-  font-size:16px;
-  cursor:pointer;
-}
-.twitter{background:#1DA1F2;color:white;}
-.form{background:#f5a623;color:black;}
-input[type=text]{
-  padding:10px 12px;
-  border-radius:8px;
-  border:none;
-  font-size:16px;
-  width:300px;
-  margin-top:10px;
-}
-#all-done,#submitted-msg{
-  color:limegreen;
-  font-weight:bold;
-  display:none;
-  margin-top:10px;
-}
-</style>
-</head>
-<body>
-
-<div class="container">
-<h1>🐺 WOLF FAIR</h1>
-<p class="subtitle">Genesis $WOLF Giveaway</p>
-
-<div class="step">
-<h2>Step 1: Like & Retweet</h2>
-<div><a href="https://x.com/i/status/2031240023883059391" target="_blank"><button class="twitter" id="post1">👍 Post 1</button></a></div>
-<div><a href="https://x.com/i/status/2030726023000789156" target="_blank"><button class="twitter" id="post2">👍 Post 2</button></a></div>
-<div><a href="https://x.com/i/status/2030259906629267470" target="_blank"><button class="twitter" id="post3">👍 Post 3</button></a></div>
-<p id="all-done">✅ Step 1 Completed! You can submit your wallet.</p>
-</div>
-
-<div class="step">
-<h2>Step 2: Submit Wallet</h2>
-<form id="gform" action="https://docs.google.com/forms/d/e/1FAIpQLSf5p6xgLVURRRM1eLO6IsTrPIJTbdW4kf3bA7MTJcWwoVjkbQ/formResponse" method="POST" target="hidden_iframe">
-  <!-- Ganti entry.XXXXXXXX dengan Entry ID field wallet Google Form kamu -->
-  <input type="text" name="entry.XXXXXXXX" id="wallet-input" placeholder="Enter your Solana wallet" required>
-  <button type="submit" class="form">📋 Submit Wallet</button>
-</form>
-<p id="submitted-msg">✅ Wallet submitted! 🎉</p>
-<iframe name="hidden_iframe" style="display:none;"></iframe>
-</div>
-</div>
-
 <script>
 let done = [false,false,false];
-function markDone(i){ done[i]=true; if(done.every(v=>v)) document.getElementById("all-done").style.display="block"; }
-document.getElementById("post1").addEventListener("click",()=>markDone(0));
-document.getElementById("post2").addEventListener("click",()=>markDone(1));
-document.getElementById("post3").addEventListener("click",()=>markDone(2));
 
+// Step click handler
+function markDone(i){
+  done[i] = true;
+  if(done.every(v => v)) document.getElementById("all-done").style.display = "block";
+}
+
+document.getElementById("post1").addEventListener("click", ()=>markDone(0));
+document.getElementById("post2").addEventListener("click", ()=>markDone(1));
+document.getElementById("post3").addEventListener("click", ()=>markDone(2));
+
+// Anti-spam wallet submit
 document.getElementById("gform").addEventListener("submit", function(e){
-  if(!done.every(v=>v)){
+  const walletInput = document.getElementById("wallet-input").value.trim();
+
+  // Cek Step 1 selesai
+  if(!done.every(v => v)){
     e.preventDefault();
     alert("Please complete Step 1 first!");
-  } else {
-    document.getElementById("submitted-msg").style.display="block";
+    return;
   }
+
+  // Ambil daftar wallet yang sudah submit dari localStorage
+  let submittedWallets = JSON.parse(localStorage.getItem("submittedWallets") || "[]");
+
+  if(submittedWallets.includes(walletInput)){
+    e.preventDefault();
+    alert("This wallet has already been submitted! ❌");
+    return;
+  }
+
+  // Simpan wallet baru ke localStorage
+  submittedWallets.push(walletInput);
+  localStorage.setItem("submittedWallets", JSON.stringify(submittedWallets));
+
+  // Tampilkan pesan berhasil submit
+  document.getElementById("submitted-msg").style.display = "block";
 });
 </script>
-
-</body>
-</html>
