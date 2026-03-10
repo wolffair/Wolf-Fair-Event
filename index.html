@@ -1,31 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wolf Fair Event</title>
+<title>Wolf Fair</title>
 
 <style>
+
 body{
-font-family: Arial;
-background: linear-gradient(135deg,#0f172a,#020617);
-color:white;
-text-align:center;
 margin:0;
-padding:0;
+font-family:Arial;
+color:white;
+background:linear-gradient(135deg,#020617,#0f172a);
+text-align:center;
 }
 
-.container{
-max-width:600px;
-margin:60px auto;
-background:#1e293b;
-padding:40px;
-border-radius:20px;
-box-shadow:0 0 30px rgba(255,200,0,0.2);
+.hero{
+padding:60px 20px;
 }
 
 h1{
+font-size:36px;
 color:#facc15;
-font-size:28px;
+}
+
+.subtitle{
+opacity:0.8;
+max-width:600px;
+margin:auto;
+}
+
+.container{
+max-width:700px;
+margin:40px auto;
+padding:30px;
+background:#1e293b;
+border-radius:20px;
+box-shadow:0 0 40px rgba(255,200,0,0.2);
+}
+
+.section{
+margin-top:25px;
+padding:20px;
+background:#0f172a;
+border-radius:15px;
+}
+
+.section h2{
+color:#facc15;
 }
 
 button{
@@ -33,9 +55,10 @@ background:#facc15;
 border:none;
 padding:14px 28px;
 border-radius:10px;
+font-weight:bold;
 font-size:16px;
 cursor:pointer;
-font-weight:bold;
+margin-top:20px;
 }
 
 button:hover{
@@ -43,51 +66,149 @@ background:#fde047;
 transform:scale(1.05);
 }
 
-.section{
-margin-top:25px;
+.timer{
+font-size:22px;
+margin-top:10px;
+color:#fde047;
 }
+
+.progress{
+background:#334155;
+border-radius:20px;
+height:18px;
+margin-top:10px;
+}
+
+.progress-bar{
+background:#facc15;
+height:18px;
+width:35%;
+border-radius:20px;
+}
+
+.social{
+margin-top:30px;
+}
+
+.social a{
+color:#facc15;
+margin:0 12px;
+font-weight:bold;
+text-decoration:none;
+}
+
+footer{
+margin-top:40px;
+opacity:0.6;
+font-size:14px;
+}
+
 </style>
+
 </head>
 
 <body>
 
-<div class="container">
+<div class="hero">
 
 <h1>🐺 Wolf Fair Early Pack Event</h1>
 
-<p>Join the first wolves and become part of the strongest pack.</p>
+<p class="subtitle">
+Wolf Fair is building a strong and loyal pack.  
+Join the Early Pack Event and become one of the first wolves.
+</p>
+
+</div>
+
+<div class="container">
 
 <div class="section">
+
 <h2>📜 How to Join</h2>
+
 <p>
 1. Follow Wolf Fair on Twitter<br>
-2. Like & Repost event<br>
+2. Like & Repost the event<br>
 3. Comment: <b>I join the pack 🐺</b><br>
 4. Invite other wolves
 </p>
+
 </div>
 
 <div class="section">
+
 <h2>🎁 Rewards</h2>
+
 <p>
-Early Supporter Role<br>
-Future WOLF Token<br>
-Exclusive NFT Drop
+• Early Supporter Role<br>
+• Future WOLF Token<br>
+• Exclusive NFT Drop
 </p>
+
 </div>
 
 <div class="section">
-<h2>⏳ Event Duration</h2>
-<p>7 Days</p>
+
+<h2>⏳ Event Countdown</h2>
+
+<div class="timer" id="countdown"></div>
+
 </div>
 
-<br>
+<div class="section">
 
-<button onclick="window.location.href='https://twitter.com'">
+<h2>📊 Pack Progress</h2>
+
+<p>Early Wolves Joined</p>
+
+<div class="progress">
+<div class="progress-bar"></div>
+</div>
+
+</div>
+
+<button onclick="window.open('https://twitter.com','_blank')">
 Join the Pack
 </button>
 
+<div class="social">
+
+<p>Community</p>
+
+<a href="#">Twitter</a>
+<a href="#">Telegram</a>
+<a href="#">Discord</a>
+
 </div>
+
+</div>
+
+<footer>
+
+Wolf Fair Community • Web3 Pack 🐺
+
+</footer>
+
+<script>
+
+var countDownDate = new Date();
+countDownDate.setDate(countDownDate.getDate()+7);
+
+var x = setInterval(function() {
+
+var now = new Date().getTime();
+var distance = countDownDate - now;
+
+var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+document.getElementById("countdown").innerHTML =
+days + "d " + hours + "h " + minutes + "m ";
+
+}, 1000);
+
+</script>
 
 </body>
 </html>
