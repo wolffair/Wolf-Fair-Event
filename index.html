@@ -140,6 +140,10 @@ button:hover{ transform:scale(1.05); opacity:0.9;}
 WOLF FAIR • Join the pack & stay ready!
 </div>
 
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 // 3D background
@@ -149,7 +153,6 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHei
 const renderer = new THREE.WebGLRenderer({canvas, alpha:true});
 renderer.setSize(window.innerWidth, window.innerHeight);
 camera.position.z = 30;
-
 const geometry = new THREE.BufferGeometry();
 const count = 1500;
 const positions = new Float32Array(count * 3);
@@ -158,47 +161,60 @@ geometry.setAttribute('position', new THREE.BufferAttribute(positions,3));
 const material = new THREE.PointsMaterial({color:0x00ffff, size:0.2});
 const points = new THREE.Points(geometry, material);
 scene.add(points);
-
-function animate(){
-  requestAnimationFrame(animate);
-  points.rotation.y += 0.001;
-  points.rotation.x += 0.0005;
-  renderer.render(scene,camera);
-}
+function animate(){ requestAnimationFrame(animate); points.rotation.y += 0.001; points.rotation.x += 0.0005; renderer.render(scene,camera);}
 animate();
-window.addEventListener('resize',()=>{
-  camera.aspect = window.innerWidth/window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth,window.innerHeight);
+window.addEventListener('resize',()=>{ camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth,window.innerHeight); });
+
+// Firebase config
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "SENDER_ID",
+  appId: "APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// User Solana wallet
+let userWallet = prompt("Enter your Solana Wallet (Phantom)");
+
+// Update centang
+function updateCheck(postId, status){
+  document.getElementById(postId+'-check').classList.toggle('show', status);
+}
+
+// Load status dari Firebase
+db.ref('users/' + userWallet).once('value').then(snapshot=>{
+  const data = snapshot.val() || {};
+  ['post1','post2','post3'].forEach(id=>{
+    updateCheck(id, data[id] === true);
+  });
+  if(Object.values(data).every(v=>v===true)) document.getElementById('all-done').style.display='block';
 });
 
-// Like & Retweet logic
-const posts = ['post1','post2','post3'];
-function checkAllDone(){
-  if(posts.every(id => localStorage.getItem(id)=='done')){
-    document.getElementById('all-done').style.display='block';
-  }
-}
-posts.forEach((id,index)=>{
+// Klik tombol → update Firebase
+['post1','post2','post3'].forEach(id=>{
   const btn = document.getElementById(id);
-  const check = document.getElementById('check'+(index+1));
-  btn.addEventListener('click',()=>{
-    check.classList.add('show');
-    localStorage.setItem(id,'done');
-    checkAllDone();
+  btn.addEventListener('click', ()=>{
+    const updates = {};
+    updates[id] = true;
+    db.ref('users/' + userWallet).update(updates);
+    updateCheck(id, true);
+    // cek semua done
+    db.ref('users/' + userWallet).once('value').then(snapshot=>{
+      const data = snapshot.val();
+      if(Object.values(data).every(v=>v===true)) document.getElementById('all-done').style.display='block';
+    });
   });
-  // Load status
-  if(localStorage.getItem(id)=='done'){
-    check.classList.add('show');
-  }
 });
-checkAllDone();
 
 // Submit Wallet
 document.getElementById('submit-wallet').addEventListener('click', function(){
     alert("✅ Wallet submitted! You will receive $WOLF tokens once the launch occurs.");
 });
 </script>
-
 </body>
 </html>
