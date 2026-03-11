@@ -27,6 +27,12 @@ body{
 }
 h1{font-size:42px;color:#f5a623;}
 .subtitle{color:#aaa;margin-bottom:25px;}
+.description{
+  color:#fff;
+  font-size:16px;
+  line-height:1.6;
+  margin-bottom:30px;
+}
 button{
   padding:12px 24px;
   margin:10px;
@@ -63,6 +69,7 @@ input[type=text]{
   }
   h1{font-size:32px;}
   button{font-size:14px; padding:10px 20px;}
+  .description{font-size:14px;}
 }
 </style>
 </head>
@@ -71,6 +78,15 @@ input[type=text]{
 <div class="container">
 <h1>🐺 WOLF FAIR</h1>
 <p class="subtitle">Genesis $WOLF Giveaway</p>
+
+<!-- Deskripsi baru -->
+<div class="description">
+🚀 Join the $WOLF Genesis Giveaway Today!<br>
+Follow the steps below and become a founding member of the Wolf Fair Pack.<br>
+🐺 Prize: 3,000 $WOLF for each lucky winner!<br>
+💎 Distribution: Tokens will be sent directly to your Phantom Solana wallet once the project officially launches.<br>
+⚡ Fair Launch: The stronger our community, the faster we go live.
+</div>
 
 <div class="step">
 <h2>Step 1: Like & Retweet</h2>
@@ -95,18 +111,15 @@ input[type=text]{
 <script>
 let done = [false,false,false];
 
-// Tandai step 1 selesai
 function markDone(i){
   done[i] = true;
   if(done.every(v => v)) document.getElementById("all-done").style.display = "block";
 }
 
-// Event click tombol like & retweet
 document.getElementById("post1").addEventListener("click", ()=>markDone(0));
 document.getElementById("post2").addEventListener("click", ()=>markDone(1));
 document.getElementById("post3").addEventListener("click", ()=>markDone(2));
 
-// Submit wallet dengan anti-spam
 document.getElementById("gform").addEventListener("submit", function(e){
   const walletInput = document.getElementById("wallet-input").value.trim();
 
