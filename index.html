@@ -71,6 +71,7 @@ input[type=text]{
 <div class="step">
 <h2>Step 2: Submit Wallet</h2>
 <form id="gform" action="https://docs.google.com/forms/d/e/1FAIpQLSf5p6xgLVURRRM1eLO6IsTrPIJTbdW4kf3bA7MTJcWwoVjkbQ/formResponse" method="POST" target="hidden_iframe">
+  <!-- Ganti entry.XXXXXXXX dengan field wallet asli di Google Form -->
   <input type="text" name="entry.XXXXXXXX" id="wallet-input" placeholder="Enter your Solana wallet" required>
   <button type="submit" class="form">📋 Submit Wallet</button>
 </form>
@@ -82,15 +83,18 @@ input[type=text]{
 <script>
 let done = [false,false,false];
 
+// Tandai step 1 selesai
 function markDone(i){
   done[i] = true;
   if(done.every(v => v)) document.getElementById("all-done").style.display = "block";
 }
 
+// Event click tombol like & retweet
 document.getElementById("post1").addEventListener("click", ()=>markDone(0));
 document.getElementById("post2").addEventListener("click", ()=>markDone(1));
 document.getElementById("post3").addEventListener("click", ()=>markDone(2));
 
+// Submit wallet dengan pengecekan anti-spam
 document.getElementById("gform").addEventListener("submit", function(e){
   const walletInput = document.getElementById("wallet-input").value.trim();
 
@@ -100,6 +104,7 @@ document.getElementById("gform").addEventListener("submit", function(e){
     return;
   }
 
+  // Ambil list wallet yang sudah submit dari localStorage
   let submittedWallets = JSON.parse(localStorage.getItem("submittedWallets") || "[]");
 
   if(submittedWallets.includes(walletInput)){
