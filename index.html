@@ -9,8 +9,8 @@ body{
   font-family:Arial,sans-serif;
   color:white;
   text-align:center;
-  /* Background aman: gambar + gradient untuk kontras */
-  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+  /* Tema background HD + gradient supaya teks jelas */
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
               url('https://i.ibb.co/4fL1J5k/hd-wolf-background.jpg') no-repeat center center fixed;
   background-size: cover;
   overflow:hidden;
@@ -55,7 +55,7 @@ input[type=text]{
   margin-top:10px;
 }
 
-/* Responsif HP */
+/* Responsif untuk HP */
 @media (max-width:480px){
   .container{
     margin:30px 10px;
@@ -95,15 +95,18 @@ input[type=text]{
 <script>
 let done = [false,false,false];
 
+// Tandai step 1 selesai
 function markDone(i){
   done[i] = true;
   if(done.every(v => v)) document.getElementById("all-done").style.display = "block";
 }
 
+// Event click tombol like & retweet
 document.getElementById("post1").addEventListener("click", ()=>markDone(0));
 document.getElementById("post2").addEventListener("click", ()=>markDone(1));
 document.getElementById("post3").addEventListener("click", ()=>markDone(2));
 
+// Submit wallet dengan anti-spam
 document.getElementById("gform").addEventListener("submit", function(e){
   const walletInput = document.getElementById("wallet-input").value.trim();
 
