@@ -418,7 +418,7 @@ button:disabled{
     <p>Complete all required social tasks first</p>
 
     <div class="link-row">
-      <a id="followTwitterBtn" class="action-btn twitter" href="https://x.com/wolftwofair" target="_blank" rel="noopener noreferrer">🐺 Follow Twitter</a>
+      <a id="followBtn" class="action-btn twitter" href="https://x.com/wolftwofair" target="_blank" rel="noopener noreferrer">⭐ Follow Twitter</a>
       <a id="likeBtn" class="action-btn twitter" href="https://x.com/intent/like?tweet_id=2031240023883059391" target="_blank" rel="noopener noreferrer">👍 Like Tweet</a>
       <a id="rtBtn" class="action-btn twitter" href="https://x.com/intent/retweet?tweet_id=2031240023883059391" target="_blank" rel="noopener noreferrer">🔁 Retweet Event</a>
       <a id="commentBtn" class="action-btn comment" href="https://x.com/i/status/2031240023883059391" target="_blank" rel="noopener noreferrer">💬 Comment</a>
@@ -476,12 +476,12 @@ button:disabled{
   "use strict";
 
   const REWARD = 1000;
-  const GOOGLE_FORM_URL = "https://forms.gle/QZGCeAHsLZY52Smt8";
+  const API_URL = "https://script.google.com/macros/s/AKfycbz2wY7TMVKpFg9AtAbDDL74UB58YEGB7N_X13G9IOEc6HdhLhNhoqumSCoaIKkIqKST/exec";
   const COIN_TARGET = 1000;
   const COIN_PER_TAP = 5;
 
   const elements = {
-    followTwitterBtn: document.getElementById("followTwitterBtn"),
+    followBtn: document.getElementById("followBtn"),
     likeBtn: document.getElementById("likeBtn"),
     rtBtn: document.getElementById("rtBtn"),
     commentBtn: document.getElementById("commentBtn"),
@@ -508,9 +508,18 @@ button:disabled{
   elements.coinTarget.textContent = COIN_TARGET;
   elements.tapValue.textContent = COIN_PER_TAP;
 
+  function getUserStorageKey() {
+    let userKey = localStorage.getItem("wolf_user_key");
+    if (!userKey) {
+      userKey = "wolf_user_" + Date.now() + "_" + Math.random().toString(36).slice(2, 10);
+      localStorage.setItem("wolf_user_key", userKey);
+    }
+    return userKey;
+  }
+
   function getDefaultStatus() {
     return {
-      followTwitter: false,
+      follow: false,
       like: false,
       retweet: false,
       comment: false,
@@ -532,12 +541,12 @@ button:disabled{
   }
 
   function getStatus() {
-    return safeParseJSON(localStorage.getItem("wolf_user_guest"), getDefaultStatus());
+    return safeParseJSON(localStorage.getItem(getUserStorageKey()), getDefaultStatus());
   }
 
   function saveStatus(status) {
-    localStorage.setItem("wolf_user_guest", JSON.stringify({
-      followTwitter: !!status.followTwitter,
+    localStorage.setItem(getUserStorageKey(), JSON.stringify({
+      follow: !!status.follow,
       like: !!status.like,
       retweet: !!status.retweet,
       comment: !!status.comment,
@@ -560,7 +569,7 @@ button:disabled{
   }
 
   function isStep1Done(status) {
-    return !!status.followTwitter &&
+    return !!status.follow &&
       !!status.like &&
       !!status.retweet &&
       !!status.comment &&
@@ -596,6 +605,14 @@ button:disabled{
     wolf.style.top = Math.floor(Math.random() * (maxY + 1)) + "px";
   }
 
+  function stopGame() {
+    gameRunning = false;
+    if (moveTimer) {
+      clearInterval(moveTimer);
+      moveTimer = null;
+    }
+  }
+
   function startGame() {
     if (gameRunning) return;
     gameRunning = true;
@@ -619,7 +636,7 @@ button:disabled{
     const status = getStatus();
 
     if (!isStep1Done(status)) {
-      setStatusMessage("Complete Follow Twitter, Like, Retweet, Comment, Telegram Channel, and Telegram Group first.", true);
+      setStatusMessage("Complete Follow, Like, Retweet, Comment, Telegram Channel, and Telegram Group first.", true);
       return;
     }
 
@@ -653,7 +670,7 @@ button:disabled{
   function updateButtons() {
     const status = getStatus();
 
-    elements.followTwitterBtn.classList.toggle("done", !!status.followTwitter);
+    elements.followBtn.classList.toggle("done", !!status.follow);
     elements.likeBtn.classList.toggle("done", !!status.like);
     elements.rtBtn.classList.toggle("done", !!status.retweet);
     elements.commentBtn.classList.toggle("done", !!status.comment);
@@ -690,9 +707,9 @@ button:disabled{
   }
 
   function verifyActions() {
-    const followTwitterDone = window.confirm("Have you already followed Twitter @wolftwofair?");
-    if (!followTwitterDone) {
-      setStatusMessage("Follow Twitter not completed.", true);
+    const followDone = window.confirm("Have you already followed the Twitter account?");
+    if (!followDone) {
+      setStatusMessage("Twitter follow not completed.", true);
       return;
     }
 
@@ -727,7 +744,7 @@ button:disabled{
     }
 
     const status = getStatus();
-    status.followTwitter = true;
+    status.follow = true;
     status.like = true;
     status.retweet = true;
     status.comment = true;
@@ -739,7 +756,7 @@ button:disabled{
     updateButtons();
   }
 
-  function submitReward() {
+  async function submitReward() {
     const status = getStatus();
 
     if (!status.tapGameDone) {
@@ -747,12 +764,48 @@ button:disabled{
       return;
     }
 
-    status.claimed = true;
-    saveStatus(status);
-    updateButtons();
+    if (status.claimed) {
+      setRewardMessage("Reward already submitted on this browser.", true);
+      return;
+    }
 
-    setRewardMessage("🎉 Reward ready. Opening form...");
-    window.open(GOOGLE_FORM_URL, "_blank");
+    const wallet = prompt("Enter your Phantom wallet:");
+
+    if (!wallet || wallet.trim().length < 20) {
+      setRewardMessage("Invalid wallet address.", true);
+      return;
+    }
+
+    const payload = {
+      wallet: wallet.trim(),
+      coins: status.tapCoins,
+      like: status.like,
+      retweet: status.retweet,
+      comment: status.comment,
+      tg_channel: status.telegramChannel,
+      tg_group: status.telegramGroup
+    };
+
+    setRewardMessage("Submitting reward...");
+
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        throw new Error("Request failed");
+      }
+
+      status.claimed = true;
+      saveStatus(status);
+      updateButtons();
+
+      setRewardMessage("✅ Reward submitted successfully!");
+    } catch (err) {
+      setRewardMessage("Submission failed. Try again.", true);
+    }
   }
 
   elements.verifyBtn.addEventListener("click", verifyActions);
