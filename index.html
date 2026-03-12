@@ -107,29 +107,47 @@ button:hover{ transform:scale(1.05); opacity:0.9; }
 </div>
 
 <script>
-// Max peserta
-const MAX_USERS = 150;
+// --- Wallet unik untuk tiap user ---
+let wallet = prompt("Enter your Solana wallet address:").trim();
+if(!wallet){
+  alert("Wallet is required to participate!");
+  throw new Error("Wallet not provided");
+}
+let userKey = "wolf_user_" + wallet;
 
-// Check slot dan sembunyikan tombol jika penuh
-function checkSlots(){
-  let total = parseInt(localStorage.getItem("wolf_users") || 0);
-  if(total >= MAX_USERS){
-    document.getElementById("submitBtn").style.display = "none";
+// --- Ambil status centang dari localStorage ---
+function getStatus(){
+  return JSON.parse(localStorage.getItem(userKey) || '{}');
+}
+function saveStatus(status){
+  localStorage.setItem(userKey, JSON.stringify(status));
+}
+
+// --- Update tombol centang ---
+function updateButtons(){
+  const status = getStatus();
+  if(status.like) document.getElementById("likeBtn").classList.add("done");
+  if(status.retweet) document.getElementById("rtBtn").classList.add("done");
+  if(status.comment) document.querySelector(".comment").classList.add("done");
+  if(status.wallet){
+    const submitBtn = document.getElementById("submitBtn");
+    submitBtn.classList.add("done");
+    submitBtn.innerHTML = "✅ 1000 $WOLF Claimed";
+    submitBtn.disabled = true;
+    submitBtn.style.background = "#22c55e";
   }
 }
 
-// Centang tiap tindakan
+// --- Centang aksi user ---
 function markDone(type){
-  localStorage.setItem("wolf_"+type,"done");
+  let status = getStatus();
+  status[type] = true;
+  saveStatus(status);
   updateButtons();
 }
 
-function updateButtons(){
-  if(localStorage.getItem("wolf_like")) document.getElementById("likeBtn").classList.add("done");
-  if(localStorage.getItem("wolf_retweet")) document.getElementById("rtBtn").classList.add("done");
-}
-
-// Submit wallet
+// --- Submit wallet & claim reward ---
+const MAX_USERS = 150;
 function submitWallet(){
   let total = parseInt(localStorage.getItem("wolf_users") || 0);
   if(total >= MAX_USERS) return;
@@ -138,22 +156,13 @@ function submitWallet(){
   localStorage.setItem("wolf_users", total);
 
   markDone("wallet");
-  const submitBtn = document.getElementById("submitBtn");
-  submitBtn.innerHTML = "✅ 1000 $WOLF Claimed";
-  submitBtn.disabled = true;
-  submitBtn.style.background = "#22c55e";
 
   document.getElementById("rewardMsg").innerHTML = "🎉 You got 1000 $WOLF!";
-  
-  // buka Google Form
   window.open("https://forms.gle/QZGCeAHsLZY52Smt8","_blank");
-
-  checkSlots();
 }
 
-// Init
+// --- Init page ---
 updateButtons();
-checkSlots();
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
