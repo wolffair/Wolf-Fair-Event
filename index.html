@@ -33,7 +33,8 @@ body{
   padding:28px 24px;
   border-radius:15px;
   box-shadow:0 0 30px rgba(255,215,0,0.18);
-  z-index:1;
+  z-index:2;
+  pointer-events:auto;
 }
 
 h1{
@@ -68,6 +69,8 @@ h1{
 
 .step{
   margin:28px 0;
+  position:relative;
+  z-index:3;
 }
 
 .step h2{
@@ -91,6 +94,13 @@ button{
   cursor:pointer;
   transition:0.25s;
   min-height:52px;
+  position:relative;
+  z-index:4;
+  -webkit-appearance:none;
+  appearance:none;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  user-select:none;
 }
 
 .twitter{
@@ -162,7 +172,8 @@ button:disabled{
   left:0;
   width:100%;
   height:100%;
-  z-index:-1;
+  z-index:0;
+  pointer-events:none;
 }
 
 #statusMsg{
@@ -187,6 +198,8 @@ button:disabled{
   justify-content:center;
   align-items:center;
   gap:10px;
+  position:relative;
+  z-index:4;
 }
 
 /* Tablet */
@@ -388,7 +401,10 @@ button:disabled{
   }
 
   function openExternal(url) {
-    window.open(url, "_blank", "noopener,noreferrer");
+    const newWindow = window.open(url, "_blank");
+    if (!newWindow || newWindow.closed || typeof newWindow.closed === "undefined") {
+      window.location.href = url;
+    }
   }
 
   function safeParseJSON(value, fallback) {
@@ -578,7 +594,7 @@ button:disabled{
       updateButtons();
 
       setRewardMessage(`🎉 You got ${REWARD} $WOLF!`);
-      window.open(GOOGLE_FORM_URL, "_blank", "noopener,noreferrer");
+      openExternal(GOOGLE_FORM_URL);
     } catch (error) {
       console.error(error);
       setRewardMessage(error.message || "Claim request failed.", true);
@@ -589,11 +605,19 @@ button:disabled{
     }
   }
 
-  elements.likeBtn.addEventListener("click", () => openExternal(likeUrl));
-  elements.rtBtn.addEventListener("click", () => openExternal(retweetUrl));
-  elements.commentBtn.addEventListener("click", () => openExternal(commentUrl));
-  elements.verifyBtn.addEventListener("click", verifyActions);
-  elements.submitBtn.addEventListener("click", submitWallet);
+  function bindPress(button, handler) {
+    button.addEventListener("click", handler, { passive: true });
+    button.addEventListener("touchend", (event) => {
+      event.preventDefault();
+      handler();
+    }, { passive: false });
+  }
+
+  bindPress(elements.likeBtn, () => openExternal(likeUrl));
+  bindPress(elements.rtBtn, () => openExternal(retweetUrl));
+  bindPress(elements.commentBtn, () => openExternal(commentUrl));
+  bindPress(elements.verifyBtn, verifyActions);
+  bindPress(elements.submitBtn, submitWallet);
 
   updateButtons();
 })();
