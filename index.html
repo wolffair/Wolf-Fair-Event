@@ -194,7 +194,7 @@ button:disabled{
 }
 
 #tapGameStep{
-  display:none;
+  display:block;
 }
 
 .game-wrap{
@@ -235,7 +235,7 @@ button:disabled{
   box-shadow:0 8px 18px rgba(245,166,35,0.35);
   cursor:pointer;
   user-select:none;
-  transition:left 0.22s ease, top 0.22s ease, transform 0.08s ease;
+  transition:left 0.22s ease, top 0.22s ease, transform 0.08s ease, opacity 0.2s ease, filter 0.2s ease;
 }
 
 #wolfCoin:active{
@@ -338,6 +338,7 @@ button:disabled{
   }
 
   #gameArea{ height:220px; }
+
   #wolfCoin{
     width:58px;
     height:58px;
@@ -353,6 +354,7 @@ button:disabled{
 
   h1{ font-size:24px; }
   .subtitle{ font-size:15px; }
+
   .description{
     font-size:14px;
     padding:14px;
@@ -369,6 +371,7 @@ button:disabled{
   }
 
   #gameArea{ height:200px; }
+
   #wolfCoin{
     width:54px;
     height:54px;
@@ -439,7 +442,7 @@ button:disabled{
         <div id="wolfCoin">🐺</div>
       </div>
 
-      <div id="gameInfo">Finish Step 1 first to start the WOLF hunt.</div>
+      <div id="gameInfo">🔒 Complete Step 1 first to unlock the WOLF hunt.</div>
     </div>
   </div>
 
@@ -607,7 +610,7 @@ button:disabled{
     } else if (status.like && status.retweet && status.comment) {
       elements.gameInfo.textContent = "Tap the running WOLF until you reach 1000 coins.";
     } else {
-      elements.gameInfo.textContent = "Finish Step 1 first to start the WOLF hunt.";
+      elements.gameInfo.textContent = "🔒 Complete Step 1 first to unlock the WOLF hunt.";
     }
   }
 
@@ -622,7 +625,17 @@ button:disabled{
     const allVerified = step1Done && !!status.tapGameDone;
     const alreadyClaimed = !!status.wallet;
 
-    elements.tapGameStep.style.display = step1Done ? "block" : "none";
+    elements.tapGameStep.style.display = "block";
+
+    if (!step1Done) {
+      elements.wolfCoin.style.opacity = "0.45";
+      elements.wolfCoin.style.filter = "grayscale(1)";
+      elements.wolfCoin.style.cursor = "not-allowed";
+    } else {
+      elements.wolfCoin.style.opacity = "1";
+      elements.wolfCoin.style.filter = "none";
+      elements.wolfCoin.style.cursor = "pointer";
+    }
 
     if (alreadyClaimed) {
       elements.submitBtn.classList.add("done");
@@ -696,7 +709,12 @@ button:disabled{
 
   function handleWolfTap() {
     const status = getStatus();
-    if (!(status.like && status.retweet && status.comment)) return;
+
+    if (!(status.like && status.retweet && status.comment)) {
+      setStatusMessage("Complete Like, Retweet, and Comment first to unlock the game.", true);
+      return;
+    }
+
     if (status.tapGameDone) return;
 
     status.tapCoins = Math.min((status.tapCoins || 0) + COIN_PER_TAP, COIN_TARGET);
