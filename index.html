@@ -214,6 +214,97 @@ button:disabled{
   z-index:4;
 }
 
+#tapGameStep{
+  display:none;
+}
+
+.game-wrap{
+  background:#151515;
+  border-radius:14px;
+  padding:18px 14px;
+  max-width:520px;
+  margin:0 auto;
+  border:1px solid rgba(255,255,255,0.06);
+}
+
+#gameArea{
+  position:relative;
+  width:100%;
+  height:260px;
+  margin:14px auto 10px;
+  border-radius:14px;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(245,166,35,0.08), transparent 30%),
+    radial-gradient(circle at 80% 60%, rgba(34,197,94,0.08), transparent 30%),
+    #0d0d0d;
+  border:1px solid rgba(255,255,255,0.05);
+}
+
+#wolfCoin{
+  position:absolute;
+  left:20px;
+  top:20px;
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:32px;
+  background:linear-gradient(135deg, #f5a623, #ffcc4d);
+  box-shadow:0 8px 18px rgba(245,166,35,0.35);
+  cursor:pointer;
+  user-select:none;
+  transition:left 0.22s ease, top 0.22s ease, transform 0.08s ease;
+}
+
+#wolfCoin:active{
+  transform:scale(0.9);
+}
+
+.game-stats{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:10px;
+  margin-top:10px;
+}
+
+.stat-box{
+  background:#101010;
+  border-radius:10px;
+  padding:10px 14px;
+  min-width:120px;
+  font-weight:bold;
+  color:#f5a623;
+}
+
+#gameInfo{
+  margin-top:12px;
+  font-weight:bold;
+  color:#f5a623;
+  min-height:24px;
+}
+
+.progress-wrap{
+  width:100%;
+  max-width:420px;
+  height:12px;
+  background:#0a0a0a;
+  border-radius:999px;
+  overflow:hidden;
+  margin:14px auto 0;
+  border:1px solid rgba(255,255,255,0.06);
+}
+
+#progressBar{
+  width:0%;
+  height:100%;
+  background:linear-gradient(90deg, #22c55e, #f5a623);
+  transition:width 0.15s ease;
+}
+
 /* Tablet */
 @media (max-width: 768px){
   .container{
@@ -284,6 +375,16 @@ button:disabled{
     font-size:14px;
     min-height:20px;
   }
+
+  #gameArea{
+    height:220px;
+  }
+
+  #wolfCoin{
+    width:58px;
+    height:58px;
+    font-size:28px;
+  }
 }
 
 /* Small phones */
@@ -321,6 +422,21 @@ button:disabled{
   .reward{
     font-size:14px;
   }
+
+  #gameArea{
+    height:200px;
+  }
+
+  #wolfCoin{
+    width:54px;
+    height:54px;
+    font-size:26px;
+  }
+
+  .stat-box{
+    min-width:100px;
+    font-size:13px;
+  }
 }
 </style>
 </head>
@@ -355,6 +471,29 @@ button:disabled{
     <div id="statusMsg"></div>
   </div>
 
+  <div class="step" id="tapGameStep">
+    <h2>Step 1.5</h2>
+    <p>Tap the running WOLF to collect coins. 1 tap = +5 coins. Reach 1000 coins to unlock wallet submission.</p>
+
+    <div class="game-wrap">
+      <div class="game-stats">
+        <div class="stat-box">Coins: <span id="coinCount">0</span></div>
+        <div class="stat-box">Target: <span id="coinTarget">1000</span></div>
+        <div class="stat-box">Tap Value: +<span id="tapValue">5</span></div>
+      </div>
+
+      <div class="progress-wrap">
+        <div id="progressBar"></div>
+      </div>
+
+      <div id="gameArea">
+        <div id="wolfCoin">🐺</div>
+      </div>
+
+      <div id="gameInfo">Finish Step 1 first to start the WOLF hunt.</div>
+    </div>
+  </div>
+
   <div class="step">
     <h2>Step 2</h2>
     <p>Submit your Solana wallet address</p>
@@ -376,6 +515,8 @@ button:disabled{
 
   const REWARD = 1000;
   const GOOGLE_FORM_URL = "https://forms.gle/QZGCeAHsLZY52Smt8";
+  const COIN_TARGET = 1000;
+  const COIN_PER_TAP = 5;
 
   const elements = {
     likeBtn: document.getElementById("likeBtn"),
@@ -384,12 +525,25 @@ button:disabled{
     verifyBtn: document.getElementById("verifyBtn"),
     submitBtn: document.getElementById("submitBtn"),
     statusMsg: document.getElementById("statusMsg"),
-    rewardMsg: document.getElementById("rewardMsg")
+    rewardMsg: document.getElementById("rewardMsg"),
+    tapGameStep: document.getElementById("tapGameStep"),
+    gameArea: document.getElementById("gameArea"),
+    wolfCoin: document.getElementById("wolfCoin"),
+    gameInfo: document.getElementById("gameInfo"),
+    coinCount: document.getElementById("coinCount"),
+    coinTarget: document.getElementById("coinTarget"),
+    tapValue: document.getElementById("tapValue"),
+    progressBar: document.getElementById("progressBar")
   };
 
   let isVerifying = false;
   let isSubmitting = false;
   let currentWallet = "";
+  let gameRunning = false;
+  let moveTimer = null;
+
+  elements.coinTarget.textContent = COIN_TARGET;
+  elements.tapValue.textContent = COIN_PER_TAP;
 
   function getUserKey(wallet) {
     return `wolf_user_${wallet}`;
@@ -413,23 +567,24 @@ button:disabled{
     }
   }
 
-  function getStatus() {
-    if (!currentWallet) {
-      return {
-        like: false,
-        retweet: false,
-        comment: false,
-        wallet: false
-      };
-    }
-
-    const raw = localStorage.getItem(getUserKey(currentWallet));
-    return safeParseJSON(raw, {
+  function getDefaultStatus() {
+    return {
       like: false,
       retweet: false,
       comment: false,
+      tapCoins: 0,
+      tapGameDone: false,
       wallet: false
-    });
+    };
+  }
+
+  function getStatus() {
+    if (!currentWallet) {
+      return getDefaultStatus();
+    }
+
+    const raw = localStorage.getItem(getUserKey(currentWallet));
+    return safeParseJSON(raw, getDefaultStatus());
   }
 
   function saveStatus(status) {
@@ -439,6 +594,8 @@ button:disabled{
       like: !!status.like,
       retweet: !!status.retweet,
       comment: !!status.comment,
+      tapCoins: Math.max(0, Number(status.tapCoins) || 0),
+      tapGameDone: !!status.tapGameDone,
       wallet: !!status.wallet
     }));
   }
@@ -458,6 +615,23 @@ button:disabled{
     button.textContent = busy ? busyText : originalText;
   }
 
+  function updateGameUI() {
+    const status = getStatus();
+    const coins = Math.min(status.tapCoins || 0, COIN_TARGET);
+    const progress = Math.min((coins / COIN_TARGET) * 100, 100);
+
+    elements.coinCount.textContent = coins;
+    elements.progressBar.style.width = `${progress}%`;
+
+    if (status.tapGameDone) {
+      elements.gameInfo.textContent = "✅ WOLF hunt completed! You can now submit your wallet.";
+    } else if (status.like && status.retweet && status.comment) {
+      elements.gameInfo.textContent = "Tap the running WOLF until you reach 1000 coins.";
+    } else {
+      elements.gameInfo.textContent = "Finish Step 1 first to start the WOLF hunt.";
+    }
+  }
+
   function updateButtons() {
     const status = getStatus();
 
@@ -465,8 +639,11 @@ button:disabled{
     elements.rtBtn.classList.toggle("done", !!status.retweet);
     elements.commentBtn.classList.toggle("done", !!status.comment);
 
-    const allVerified = !!status.like && !!status.retweet && !!status.comment;
+    const step1Done = !!status.like && !!status.retweet && !!status.comment;
+    const allVerified = step1Done && !!status.tapGameDone;
     const alreadyClaimed = !!status.wallet;
+
+    elements.tapGameStep.style.display = step1Done ? "block" : "none";
 
     if (alreadyClaimed) {
       elements.submitBtn.classList.add("done");
@@ -481,6 +658,13 @@ button:disabled{
     }
 
     elements.verifyBtn.disabled = isVerifying || isSubmitting;
+    updateGameUI();
+
+    if (step1Done && !status.tapGameDone) {
+      startGame();
+    } else {
+      stopGame();
+    }
   }
 
   function ensureWalletForStatus() {
@@ -488,6 +672,61 @@ button:disabled{
       currentWallet = askWallet();
     }
     return !!currentWallet;
+  }
+
+  function moveWolf() {
+    const area = elements.gameArea;
+    const wolf = elements.wolfCoin;
+
+    const maxX = Math.max(area.clientWidth - wolf.offsetWidth - 8, 0);
+    const maxY = Math.max(area.clientHeight - wolf.offsetHeight - 8, 0);
+
+    const x = Math.floor(Math.random() * (maxX + 1));
+    const y = Math.floor(Math.random() * (maxY + 1));
+
+    wolf.style.left = `${x}px`;
+    wolf.style.top = `${y}px`;
+  }
+
+  function stopGame() {
+    gameRunning = false;
+    if (moveTimer) {
+      clearInterval(moveTimer);
+      moveTimer = null;
+    }
+  }
+
+  function startGame() {
+    const status = getStatus();
+    if (gameRunning || status.tapGameDone) return;
+
+    gameRunning = true;
+    moveWolf();
+
+    if (moveTimer) clearInterval(moveTimer);
+    moveTimer = setInterval(moveWolf, 650);
+  }
+
+  function handleWolfTap() {
+    const status = getStatus();
+    if (!(status.like && status.retweet && status.comment)) return;
+    if (status.tapGameDone) return;
+
+    status.tapCoins = Math.min((status.tapCoins || 0) + COIN_PER_TAP, COIN_TARGET);
+
+    if (status.tapCoins >= COIN_TARGET) {
+      status.tapCoins = COIN_TARGET;
+      status.tapGameDone = true;
+      saveStatus(status);
+      stopGame();
+      updateButtons();
+      setStatusMessage("Mini game completed. Submit Wallet is now unlocked.");
+      return;
+    }
+
+    saveStatus(status);
+    updateGameUI();
+    moveWolf();
   }
 
   async function verifyActions() {
@@ -513,6 +752,8 @@ button:disabled{
         status.like = false;
         status.retweet = false;
         status.comment = false;
+        status.tapCoins = 0;
+        status.tapGameDone = false;
         saveStatus(status);
         updateButtons();
         setStatusMessage("Verification stopped: Like not completed.", true);
@@ -525,6 +766,8 @@ button:disabled{
         status.like = true;
         status.retweet = false;
         status.comment = false;
+        status.tapCoins = 0;
+        status.tapGameDone = false;
         saveStatus(status);
         updateButtons();
         setStatusMessage("Verification stopped: Retweet not completed.", true);
@@ -536,12 +779,17 @@ button:disabled{
       status.like = true;
       status.retweet = true;
       status.comment = !!commentDone;
-      saveStatus(status);
 
+      if (!status.comment) {
+        status.tapCoins = 0;
+        status.tapGameDone = false;
+      }
+
+      saveStatus(status);
       updateButtons();
 
       if (status.like && status.retweet && status.comment) {
-        setStatusMessage("All actions verified successfully.");
+        setStatusMessage("All actions verified successfully. Now complete the WOLF hunt.");
       } else {
         setStatusMessage("Verification stopped: Comment not completed.", true);
       }
@@ -566,7 +814,12 @@ button:disabled{
     const status = getStatus();
 
     if (!(status.like && status.retweet && status.comment)) {
-      setRewardMessage("Complete and verify all actions first.", true);
+      setRewardMessage("Complete and verify Step 1 first.", true);
+      return;
+    }
+
+    if (!status.tapGameDone) {
+      setRewardMessage("Complete the WOLF tap game first.", true);
       return;
     }
 
@@ -601,6 +854,8 @@ button:disabled{
 
   elements.verifyBtn.addEventListener("click", verifyActions);
   elements.submitBtn.addEventListener("click", submitWallet);
+  elements.wolfCoin.addEventListener("click", handleWolfTap);
+  elements.wolfCoin.addEventListener("touchstart", handleWolfTap, { passive: true });
 
   updateButtons();
 })();
