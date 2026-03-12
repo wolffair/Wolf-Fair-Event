@@ -5,99 +5,157 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>WOLF FAIR Genesis Giveaway</title>
 <style>
-body{
+*{
+  box-sizing:border-box;
+}
+
+html, body{
   margin:0;
+  padding:0;
+  width:100%;
+}
+
+body{
   font-family: Arial, sans-serif;
   color:white;
   text-align:center;
   background:#000;
-  overflow:hidden;
-  padding:0;
+  overflow-x:hidden;
+  overflow-y:auto;
+  min-height:100vh;
 }
+
 .container{
   position:relative;
-  max-width:720px;
-  margin:50px auto;
+  width:min(720px, calc(100% - 32px));
+  margin:24px auto;
   background:#0f0f0f;
-  padding:40px;
+  padding:28px 24px;
   border-radius:15px;
-  box-shadow:0 0 30px rgba(255,215,0,0.25);
+  box-shadow:0 0 30px rgba(255,215,0,0.18);
   z-index:1;
 }
+
 h1{
+  margin:0;
   font-size:42px;
   color:#f5a623;
   letter-spacing:2px;
 }
+
 .subtitle{
   color:#aaa;
-  margin-bottom:25px;
+  margin:14px 0 24px;
+  font-size:20px;
 }
+
 .description{
   background:#161616;
   padding:20px;
   border-radius:12px;
-  margin-bottom:30px;
+  margin-bottom:28px;
   color:#ccc;
   line-height:1.7;
 }
-.step{
-  margin:30px 0;
+
+.description p{
+  margin:0 0 16px;
 }
+
+.description p:last-child{
+  margin-bottom:0;
+}
+
+.step{
+  margin:28px 0;
+}
+
+.step h2{
+  margin:0 0 12px;
+  font-size:38px;
+}
+
+.step p{
+  margin:0 0 18px;
+  color:#ddd;
+  line-height:1.5;
+}
+
 button{
-  padding:14px 26px;
-  margin:10px;
+  padding:14px 22px;
+  margin:8px;
   border:none;
-  border-radius:8px;
+  border-radius:10px;
   font-size:16px;
   font-weight:bold;
   cursor:pointer;
-  transition:0.3s;
+  transition:0.25s;
+  min-height:52px;
 }
+
 .twitter{
   background:#1DA1F2;
   color:white;
 }
+
 .comment{
   background:#ff9900;
   color:white;
 }
+
 .form{
   background:#f5a623;
   color:black;
 }
+
 .verify{
   background:#22c55e;
   color:white;
 }
+
 button:hover{
-  transform:scale(1.05);
-  opacity:0.9;
+  transform:translateY(-1px);
+  opacity:0.95;
 }
+
 button:disabled{
   opacity:0.6;
   cursor:not-allowed;
   transform:none;
 }
+
 .done{
   background:#22c55e !important;
   color:white;
 }
+
 .done::after{
   content:" ✓";
 }
+
 .reward{
   background:#151515;
-  padding:15px;
+  padding:16px;
   border-radius:10px;
   margin-top:20px;
   font-weight:bold;
 }
+
+.reward h2{
+  margin:0 0 10px;
+}
+
+.reward p{
+  margin:0;
+  line-height:1.6;
+}
+
 .footer{
-  margin-top:35px;
+  margin-top:28px;
   color:#777;
   font-size:14px;
 }
+
 #bg-canvas{
   position:fixed;
   top:0;
@@ -106,24 +164,136 @@ button:disabled{
   height:100%;
   z-index:-1;
 }
+
 #statusMsg{
-  margin-top:15px;
+  margin-top:14px;
   color:#f5a623;
   font-weight:bold;
   min-height:24px;
+  line-height:1.5;
 }
+
 #rewardMsg{
   margin-top:10px;
   color:#22c55e;
   font-weight:bold;
   min-height:24px;
+  line-height:1.5;
 }
+
 .link-row{
   display:flex;
   flex-wrap:wrap;
   justify-content:center;
   align-items:center;
-  gap:8px;
+  gap:10px;
+}
+
+/* Tablet */
+@media (max-width: 768px){
+  .container{
+    width:calc(100% - 24px);
+    margin:18px auto 24px;
+    padding:22px 16px;
+    border-radius:14px;
+  }
+
+  h1{
+    font-size:30px;
+    letter-spacing:1px;
+  }
+
+  .subtitle{
+    font-size:16px;
+    margin:12px 0 18px;
+  }
+
+  .description{
+    padding:16px;
+    font-size:15px;
+    line-height:1.65;
+    margin-bottom:22px;
+  }
+
+  .step{
+    margin:24px 0;
+  }
+
+  .step h2{
+    font-size:28px;
+    margin-bottom:10px;
+  }
+
+  .step p{
+    font-size:15px;
+    margin-bottom:14px;
+  }
+
+  .link-row{
+    flex-direction:column;
+    gap:8px;
+  }
+
+  button{
+    width:100%;
+    max-width:320px;
+    margin:4px 0;
+    padding:13px 16px;
+    font-size:15px;
+  }
+
+  .reward{
+    padding:14px;
+    margin-top:18px;
+    font-size:15px;
+  }
+
+  .footer{
+    margin-top:22px;
+    font-size:13px;
+  }
+
+  #statusMsg,
+  #rewardMsg{
+    font-size:14px;
+    min-height:20px;
+  }
+}
+
+/* Small phones */
+@media (max-width: 420px){
+  .container{
+    width:calc(100% - 16px);
+    padding:18px 12px;
+  }
+
+  h1{
+    font-size:24px;
+  }
+
+  .subtitle{
+    font-size:15px;
+  }
+
+  .description{
+    font-size:14px;
+    padding:14px;
+  }
+
+  .step h2{
+    font-size:24px;
+  }
+
+  button{
+    max-width:none;
+    width:100%;
+    font-size:14px;
+    padding:12px 14px;
+  }
+
+  .reward{
+    font-size:14px;
+  }
 }
 </style>
 </head>
@@ -151,7 +321,7 @@ button:disabled{
       <button id="commentBtn" class="comment" type="button">💬 Comment</button>
     </div>
 
-    <div>
+    <div style="margin-top:10px;">
       <button id="verifyBtn" class="verify" type="button">✅ Verify Actions</button>
     </div>
 
