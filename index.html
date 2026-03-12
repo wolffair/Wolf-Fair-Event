@@ -374,7 +374,6 @@ button:disabled{
 (() => {
   "use strict";
 
-  const TWEET_ID = "2031240023883059391";
   const REWARD = 1000;
   const GOOGLE_FORM_URL = "https://forms.gle/QZGCeAHsLZY52Smt8";
 
@@ -398,8 +397,7 @@ button:disabled{
 
   function askWallet() {
     const walletInput = window.prompt("Enter your Solana wallet address:");
-    const wallet = typeof walletInput === "string" ? walletInput.trim() : "";
-    return wallet;
+    return typeof walletInput === "string" ? walletInput.trim() : "";
   }
 
   function openExternal(url) {
@@ -485,59 +483,59 @@ button:disabled{
     elements.verifyBtn.disabled = isVerifying || isSubmitting;
   }
 
-  async function parseJsonResponse(response) {
-    const text = await response.text();
-    if (!text) return {};
-    try {
-      return JSON.parse(text);
-    } catch {
-      throw new Error("Server returned invalid JSON");
+  function ensureWalletForStatus() {
+    if (!currentWallet) {
+      currentWallet = askWallet();
     }
+    return !!currentWallet;
   }
 
   async function verifyActions() {
     if (isVerifying || isSubmitting) return;
 
+    if (!ensureWalletForStatus()) {
+      setStatusMessage("Wallet is required to save verification status.", true);
+      return;
+    }
+
     isVerifying = true;
     updateButtons();
-    setStatusMessage("Checking your X actions...");
+    setStatusMessage("Verifying actions...");
     setRewardMessage("");
 
     const verifyOriginalText = "✅ Verify Actions";
     setButtonBusy(elements.verifyBtn, "⏳ Verifying...", verifyOriginalText, true);
 
     try {
-      const response = await fetch(`/api/verify-x-actions?tweetId=${encodeURIComponent(TWEET_ID)}`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Accept": "application/json"
-        }
-      });
-
-      const result = await parseJsonResponse(response);
-
-      if (!response.ok) {
-        throw new Error(result.message || "Verification request failed");
-      }
-
-      if (!result.xConnected) {
-        setStatusMessage("Please connect your X account first.", true);
+      const likeDone = window.confirm("Have you already liked the tweet?");
+      if (!likeDone) {
+        const status = getStatus();
+        status.like = false;
+        status.retweet = false;
+        status.comment = false;
+        saveStatus(status);
+        updateButtons();
+        setStatusMessage("Verification stopped: Like not completed.", true);
         return;
       }
 
-      if (!currentWallet) {
-        currentWallet = askWallet();
-        if (!currentWallet) {
-          setStatusMessage("Wallet is required to save verification status.", true);
-          return;
-        }
+      const rtDone = window.confirm("Have you already retweeted the tweet?");
+      if (!rtDone) {
+        const status = getStatus();
+        status.like = true;
+        status.retweet = false;
+        status.comment = false;
+        saveStatus(status);
+        updateButtons();
+        setStatusMessage("Verification stopped: Retweet not completed.", true);
+        return;
       }
 
+      const commentDone = window.confirm("Have you already commented on the tweet?");
       const status = getStatus();
-      status.like = !!result.like;
-      status.retweet = !!result.retweet;
-      status.comment = !!result.comment;
+      status.like = true;
+      status.retweet = true;
+      status.comment = !!commentDone;
       saveStatus(status);
 
       updateButtons();
@@ -545,15 +543,11 @@ button:disabled{
       if (status.like && status.retweet && status.comment) {
         setStatusMessage("All actions verified successfully.");
       } else {
-        const missing = [];
-        if (!status.like) missing.push("Like");
-        if (!status.retweet) missing.push("Retweet");
-        if (!status.comment) missing.push("Comment");
-        setStatusMessage(`Not complete yet: ${missing.join(", ")}`, true);
+        setStatusMessage("Verification stopped: Comment not completed.", true);
       }
     } catch (error) {
       console.error(error);
-      setStatusMessage(error.message || "Verification failed. Try again.", true);
+      setStatusMessage("Verification failed. Try again.", true);
     } finally {
       isVerifying = false;
       setButtonBusy(elements.verifyBtn, "⏳ Verifying...", "✅ Verify Actions", false);
@@ -564,12 +558,9 @@ button:disabled{
   async function submitWallet() {
     if (isSubmitting || isVerifying) return;
 
-    if (!currentWallet) {
-      currentWallet = askWallet();
-      if (!currentWallet) {
-        setRewardMessage("Wallet is required to continue.", true);
-        return;
-      }
+    if (!ensureWalletForStatus()) {
+      setRewardMessage("Wallet is required to continue.", true);
+      return;
     }
 
     const status = getStatus();
@@ -592,25 +583,6 @@ button:disabled{
     setButtonBusy(elements.submitBtn, "⏳ Submitting...", submitOriginalText, true);
 
     try {
-      const response = await fetch("/api/claim", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify({
-          wallet: currentWallet,
-          tweetId: TWEET_ID
-        })
-      });
-
-      const data = await parseJsonResponse(response);
-
-      if (!response.ok) {
-        throw new Error(data.message || "Claim failed.");
-      }
-
       status.wallet = true;
       saveStatus(status);
       updateButtons();
@@ -619,7 +591,7 @@ button:disabled{
       openExternal(GOOGLE_FORM_URL);
     } catch (error) {
       console.error(error);
-      setRewardMessage(error.message || "Claim request failed.", true);
+      setRewardMessage("Claim request failed.", true);
     } finally {
       isSubmitting = false;
       setButtonBusy(elements.submitBtn, "⏳ Submitting...", submitOriginalText, false);
