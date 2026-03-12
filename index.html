@@ -122,7 +122,7 @@ z-index:-1;
 <div class="description">
 <p>Welcome to the <b>WOLF FAIR Genesis Event</b>.</p>
 <p>Participants who complete the steps below will have a chance to receive <b>$WOLF tokens</b>.</p>
-<p>🎁 Total reward: <b>1000 $WOLF</b></p>
+<p>🎁 Total reward: <b>3000 $WOLF</b></p>
 </div>
 
 <div class="step">
@@ -147,11 +147,11 @@ z-index:-1;
 
 <p>Submit your Solana wallet address</p>
 
-<input id="wallet" placeholder="Enter Solana Wallet">
+<input id="wallet" placeholder="Enter Solana Wallet Address">
 
 <br>
 
-<button class="form" onclick="sendWallet()">Submit Wallet</button>
+<button class="form" onclick="sendWallet()">📩 Submit Wallet</button>
 
 <p id="msg"></p>
 
@@ -161,7 +161,7 @@ z-index:-1;
 
 <h2>🎁 Reward</h2>
 
-<p>1000 $WOLF tokens will be distributed among winners</p>
+<p>3000 $WOLF tokens will be distributed among winners</p>
 
 </div>
 
@@ -177,14 +177,19 @@ WOLF FAIR • Join the pack
 
 function sendWallet(){
 
-let wallet = document.getElementById("wallet").value;
+let wallet=document.getElementById("wallet").value;
+
+if(wallet===""){
+document.getElementById("msg").innerHTML="⚠ Enter wallet first";
+return;
+}
 
 let url="https://docs.google.com/forms/d/e/1FAIpQLSf5p6xgLVURRRM1eLO6IsTrPIJTbdW4kf3bA7MTJcWwoVjkbQ/formResponse";
 
-let data = new FormData();
+let data=new FormData();
 
-/* GANTI dengan entry ID dari Google Form */
-data.append("entry.1234567890", wallet);
+/* GANTI ENTRY ID */
+data.append("entry.1234567890",wallet);
 
 fetch(url,{
 method:"POST",
@@ -192,7 +197,9 @@ mode:"no-cors",
 body:data
 });
 
-document.getElementById("msg").innerHTML="Wallet submitted successfully";
+document.getElementById("msg").innerHTML="✅ Wallet submitted successfully";
+
+document.getElementById("wallet").value="";
 
 }
 
@@ -202,31 +209,32 @@ document.getElementById("msg").innerHTML="Wallet submitted successfully";
 
 <script>
 
-const canvas = document.getElementById('bg-canvas');
+const canvas=document.getElementById('bg-canvas');
 
-const scene = new THREE.Scene();
+const scene=new THREE.Scene();
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight,0.1,1000);
+const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
 
-const renderer = new THREE.WebGLRenderer({canvas, alpha:true});
+const renderer=new THREE.WebGLRenderer({canvas,alpha:true});
 
-renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setSize(window.innerWidth,window.innerHeight);
 
-camera.position.z = 30;
+camera.position.z=30;
 
-const geometry = new THREE.BufferGeometry();
+const geometry=new THREE.BufferGeometry();
 
-const count = 1500;
+const count=1500;
 
-const positions = new Float32Array(count * 3);
+const positions=new Float32Array(count*3);
 
-for(let i=0;i<count*3;i++) positions[i]=(Math.random()-0.5)*100;
+for(let i=0;i<count*3;i++)
+positions[i]=(Math.random()-0.5)*100;
 
-geometry.setAttribute('position', new THREE.BufferAttribute(positions,3));
+geometry.setAttribute('position',new THREE.BufferAttribute(positions,3));
 
-const material = new THREE.PointsMaterial({color:0x00ffff, size:0.2});
+const material=new THREE.PointsMaterial({color:0x00ffff,size:0.2});
 
-const points = new THREE.Points(geometry, material);
+const points=new THREE.Points(geometry,material);
 
 scene.add(points);
 
@@ -234,9 +242,9 @@ function animate(){
 
 requestAnimationFrame(animate);
 
-points.rotation.y += 0.001;
+points.rotation.y+=0.001;
 
-points.rotation.x += 0.0005;
+points.rotation.x+=0.0005;
 
 renderer.render(scene,camera);
 
@@ -244,7 +252,10 @@ renderer.render(scene,camera);
 
 animate();
 
-</script>
+window.addEventListener('resize',()=>{
 
-</body>
-</html>
+camera.aspect=window.innerWidth/window.innerHeight;
+
+camera.updateProjectionMatrix();
+
+renderer.setSize(window
