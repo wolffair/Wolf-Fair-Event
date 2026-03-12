@@ -1,268 +1,257 @@
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-
 (() => {
-"use strict";
 
-const REWARD = 1000;
-const GOOGLE_FORM_URL = "https://forms.gle/QZGCeAHsLZY52Smt8";
-const COIN_TARGET = 1000;
-const COIN_PER_TAP = 5;
-const TWEET_ID = "2031240023883059391";
-
-const el = id => document.getElementById(id);
+const REWARD = 1000
+const GOOGLE_FORM_URL = "https://forms.gle/QZGCeAHsLZY52Smt8"
+const COIN_TARGET = 1000
+const COIN_PER_TAP = 5
 
 const elements = {
-connectWalletBtn: el("connectWalletBtn"),
-walletStatus: el("walletStatus"),
-likeBtn: el("likeBtn"),
-rtBtn: el("rtBtn"),
-commentBtn: el("commentBtn"),
-verifyBtn: el("verifyBtn"),
-submitBtn: el("submitBtn"),
-statusMsg: el("statusMsg"),
-rewardMsg: el("rewardMsg"),
-tapGameStep: el("tapGameStep"),
-gameArea: el("gameArea"),
-wolfCoin: el("wolfCoin"),
-gameInfo: el("gameInfo"),
-coinCount: el("coinCount"),
-coinTarget: el("coinTarget"),
-tapValue: el("tapValue"),
-progressBar: el("progressBar")
-};
-
-let isVerifying = false;
-let isSubmitting = false;
-let currentWallet = "";
-let gameRunning = false;
-let moveTimer = null;
-
-if(elements.coinTarget) elements.coinTarget.textContent = COIN_TARGET;
-if(elements.tapValue) elements.tapValue.textContent = COIN_PER_TAP;
-
-function getPhantomProvider(){
-const provider = window.phantom?.solana || window.solana;
-if(provider?.isPhantom) return provider;
-return null;
+likeBtn: document.getElementById("likeBtn"),
+rtBtn: document.getElementById("rtBtn"),
+commentBtn: document.getElementById("commentBtn"),
+verifyBtn: document.getElementById("verifyBtn"),
+submitBtn: document.getElementById("submitBtn"),
+statusMsg: document.getElementById("statusMsg"),
+rewardMsg: document.getElementById("rewardMsg"),
+tapGameStep: document.getElementById("tapGameStep"),
+gameArea: document.getElementById("gameArea"),
+wolfCoin: document.getElementById("wolfCoin"),
+gameInfo: document.getElementById("gameInfo"),
+coinCount: document.getElementById("coinCount"),
+coinTarget: document.getElementById("coinTarget"),
+tapValue: document.getElementById("tapValue"),
+progressBar: document.getElementById("progressBar")
 }
 
-function shortWallet(wallet){
-if(!wallet) return "";
-return wallet.slice(0,4)+"..."+wallet.slice(-4);
-}
+let gameRunning=false
+let moveTimer=null
+let lastTap=0
 
-function getUserKey(wallet){
-return `wolf_user_${wallet}`;
-}
-
-function getDefaultStatus(){
-return {like:false,retweet:false,comment:false,tapCoins:0,tapGameDone:false,wallet:false};
-}
-
-function safeParseJSON(v,fallback){
-try{
-const p = JSON.parse(v);
-return p && typeof p==="object" ? p : fallback;
-}catch{
-return fallback;
-}
-}
+elements.coinTarget.textContent = COIN_TARGET
+elements.tapValue.textContent = COIN_PER_TAP
 
 function getStatus(){
-if(!currentWallet) return getDefaultStatus();
-const raw = localStorage.getItem(getUserKey(currentWallet));
-return safeParseJSON(raw,getDefaultStatus());
+return JSON.parse(localStorage.getItem("wolf_user") ||
+'{"like":false,"retweet":false,"comment":false,"tapCoins":0,"tapGameDone":false}')
 }
 
-function saveStatus(status){
-if(!currentWallet) return;
-
-localStorage.setItem(
-getUserKey(currentWallet),
-JSON.stringify({
-like:!!status.like,
-retweet:!!status.retweet,
-comment:!!status.comment,
-tapCoins:Math.max(0,Number(status.tapCoins)||0),
-tapGameDone:!!status.tapGameDone,
-wallet:!!status.wallet
-})
-);
+function saveStatus(s){
+localStorage.setItem("wolf_user",JSON.stringify(s))
 }
 
 function updateGameUI(){
 
-if(!elements.coinCount || !elements.progressBar) return;
+const s = getStatus()
 
-const status = getStatus();
-const coins = Math.min(status.tapCoins||0,COIN_TARGET);
+elements.coinCount.textContent = s.tapCoins
 
-elements.coinCount.textContent = coins;
-elements.progressBar.style.width = ((coins/COIN_TARGET)*100)+"%";
+const progress = (s.tapCoins / COIN_TARGET) * 100
+elements.progressBar.style.width = progress + "%"
+
+if(s.tapGameDone){
+
+elements.gameInfo.textContent = "✅ Game completed. Submit reward."
+
+}else if(s.like && s.retweet && s.comment){
+
+elements.gameInfo.textContent = "Tap the running WOLF"
+
+}else{
+
+elements.gameInfo.textContent = "🔒 Complete Step 1 first"
+
+}
 
 }
 
 function moveWolf(){
 
-if(!elements.gameArea || !elements.wolfCoin) return;
+const area = elements.gameArea
+const wolf = elements.wolfCoin
 
-const area = elements.gameArea;
-const wolf = elements.wolfCoin;
+const maxX = area.clientWidth - wolf.offsetWidth
+const maxY = area.clientHeight - wolf.offsetHeight
 
-const maxX = Math.max(area.clientWidth - wolf.offsetWidth - 8,0);
-const maxY = Math.max(area.clientHeight - wolf.offsetHeight - 8,0);
+wolf.style.left = Math.random()*maxX+"px"
+wolf.style.top = Math.random()*maxY+"px"
 
-wolf.style.left = Math.random()*maxX+"px";
-wolf.style.top = Math.random()*maxY+"px";
-
-}
-
-function stopGame(){
-gameRunning=false;
-if(moveTimer) clearInterval(moveTimer);
 }
 
 function startGame(){
 
-const status = getStatus();
+const s = getStatus()
 
-if(gameRunning || status.tapGameDone) return;
+if(gameRunning || s.tapGameDone) return
 
-gameRunning=true;
+gameRunning = true
+moveWolf()
 
-moveWolf();
-
-moveTimer=setInterval(moveWolf,650);
-
-}
-
-function handleWolfTap(){
-
-const status = getStatus();
-
-if(!(status.like && status.retweet && status.comment)) return;
-
-if(status.tapGameDone) return;
-
-status.tapCoins = Math.min((status.tapCoins||0)+COIN_PER_TAP,COIN_TARGET);
-
-if(status.tapCoins>=COIN_TARGET){
-status.tapCoins=COIN_TARGET;
-status.tapGameDone=true;
-stopGame();
-}
-
-saveStatus(status);
-
-updateGameUI();
-
-moveWolf();
+moveTimer = setInterval(moveWolf,700)
 
 }
 
-async function connectPhantom(){
+function stopGame(){
 
-const provider=getPhantomProvider();
+gameRunning=false
 
-if(!provider) return;
-
-const res = await provider.connect();
-
-currentWallet = res.publicKey.toString();
-
-if(elements.walletStatus){
-elements.walletStatus.textContent="Connected: "+shortWallet(currentWallet);
+if(moveTimer){
+clearInterval(moveTimer)
+moveTimer=null
 }
 
-updateGameUI();
+}
+
+function createCoinEffect(x,y){
+
+const coin=document.createElement("div")
+coin.innerText="+5"
+coin.style.position="absolute"
+coin.style.color="#22c55e"
+coin.style.fontWeight="bold"
+coin.style.pointerEvents="none"
+coin.style.left=x+"px"
+coin.style.top=y+"px"
+coin.style.animation="coinFloat 0.8s ease-out forwards"
+
+elements.gameArea.appendChild(coin)
+
+setTimeout(()=>coin.remove(),800)
+
+}
+
+function handleWolfTap(e){
+
+const s = getStatus()
+
+if(!(s.like && s.retweet && s.comment)){
+
+elements.statusMsg.textContent="Complete Like Retweet Comment first"
+elements.statusMsg.style.color="red"
+return
+
+}
+
+if(s.tapGameDone) return
+
+const now=Date.now()
+
+if(now-lastTap < 80) return
+lastTap=now
+
+const rect = elements.gameArea.getBoundingClientRect()
+
+createCoinEffect(
+e.clientX - rect.left,
+e.clientY - rect.top
+)
+
+s.tapCoins += COIN_PER_TAP
+
+if(s.tapCoins >= COIN_TARGET){
+
+s.tapCoins = COIN_TARGET
+s.tapGameDone = true
+
+saveStatus(s)
+
+stopGame()
+
+updateButtons()
+
+elements.statusMsg.textContent="🎉 Game completed!"
+
+return
+}
+
+saveStatus(s)
+
+updateGameUI()
+
+moveWolf()
 
 }
 
 function updateButtons(){
 
-const status = getStatus();
+const s = getStatus()
 
-if(elements.likeBtn) elements.likeBtn.classList.toggle("done",status.like);
-if(elements.rtBtn) elements.rtBtn.classList.toggle("done",status.retweet);
-if(elements.commentBtn) elements.commentBtn.classList.toggle("done",status.comment);
+elements.likeBtn.classList.toggle("done",s.like)
+elements.rtBtn.classList.toggle("done",s.retweet)
+elements.commentBtn.classList.toggle("done",s.comment)
 
-const step1Done = status.like && status.retweet && status.comment;
+const step1Done = s.like && s.retweet && s.comment
 
-if(step1Done && !status.tapGameDone){
-startGame();
+elements.tapGameStep.style.display="block"
+
+if(!step1Done){
+
+elements.wolfCoin.style.opacity="0.35"
+elements.wolfCoin.style.filter="grayscale(1)"
+elements.wolfCoin.style.cursor="not-allowed"
+
 }else{
-stopGame();
-}
+
+elements.wolfCoin.style.opacity="1"
+elements.wolfCoin.style.filter="none"
+elements.wolfCoin.style.cursor="pointer"
+
+startGame()
 
 }
 
-async function verifyActions(){
-
-if(isVerifying) return;
-
-isVerifying=true;
-
-const likeDone = confirm("Have you liked the tweet?");
-if(!likeDone){isVerifying=false;return;}
-
-const rtDone = confirm("Have you retweeted the tweet?");
-if(!rtDone){isVerifying=false;return;}
-
-const commentDone = confirm("Have you commented?");
-
-const status = getStatus();
-
-status.like=true;
-status.retweet=true;
-status.comment=commentDone;
-
-saveStatus(status);
-
-updateButtons();
-
-isVerifying=false;
+updateGameUI()
 
 }
 
-async function submitWallet(){
+function verifyActions(){
 
-if(!(await connectPhantom())) return;
+const like = confirm("Did you Like the post?")
+if(!like) return
 
-const status = getStatus();
+const rt = confirm("Did you Retweet?")
+if(!rt) return
 
-if(!status.tapGameDone) return;
+const comment = confirm("Did you Comment?")
+if(!comment) return
 
-window.location.href =
-GOOGLE_FORM_URL +
-"?wallet="+encodeURIComponent(currentWallet)+
-"&tweet="+encodeURIComponent(TWEET_ID);
+const s = getStatus()
+
+s.like=true
+s.retweet=true
+s.comment=true
+
+saveStatus(s)
+
+elements.statusMsg.textContent="Actions verified"
+
+updateButtons()
 
 }
 
-if(elements.connectWalletBtn){
-elements.connectWalletBtn.addEventListener("click",connectPhantom);
+function submitWallet(){
+
+const s = getStatus()
+
+if(!s.tapGameDone){
+
+elements.rewardMsg.textContent="Finish game first"
+elements.rewardMsg.style.color="red"
+return
+
 }
 
-if(elements.verifyBtn){
-elements.verifyBtn.addEventListener("click",verifyActions);
+elements.rewardMsg.textContent="🎉 Reward ready. Fill the form"
+
+window.open(GOOGLE_FORM_URL,"_blank")
+
 }
 
-if(elements.submitBtn){
-elements.submitBtn.addEventListener("click",submitWallet);
-}
+elements.verifyBtn.onclick = verifyActions
+elements.submitBtn.onclick = submitWallet
+elements.wolfCoin.addEventListener("click",handleWolfTap)
 
-if(elements.wolfCoin){
-elements.wolfCoin.addEventListener("click",handleWolfTap);
-elements.wolfCoin.addEventListener("touchstart",handleWolfTap,{passive:true});
-}
+updateButtons()
 
-connectPhantom().catch(()=>{});
-
-updateButtons();
-updateGameUI();
-
-})();
-
-});
+})()
 </script>
