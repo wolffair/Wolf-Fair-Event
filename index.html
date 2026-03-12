@@ -59,8 +59,6 @@ input[type=text]{
   display:none;
   margin-top:18px;
 }
-
-/* Responsif untuk HP */
 @media (max-width:480px){
   .container{margin:40px 15px; padding:40px;}
   h1{font-size:48px;}
@@ -115,7 +113,6 @@ Join the pack, complete the steps, and be part of the beginning. 🐺🚀
 </form>
 <p id="submitted-msg">✅ Wallet submitted! 🎉</p>
 
-<!-- Tampilkan coin per user -->
 <p>Your Wallet Coin: <span id="wallet-coin">0 $WOLF</span></p>
 
 <iframe name="hidden_iframe" style="display:none;"></iframe>
@@ -129,10 +126,11 @@ document.getElementById("post1").addEventListener("click",()=>markDone(0));
 document.getElementById("post2").addEventListener("click",()=>markDone(1));
 document.getElementById("post3").addEventListener("click",()=>markDone(2));
 
-// Ambil data coin per browser user
 let walletData = JSON.parse(localStorage.getItem("walletData") || "{}");
 
-// Fungsi update tampilan coin
+// Limit 150 wallets
+let registeredWallets = JSON.parse(localStorage.getItem("registeredWallets") || "[]");
+
 function updateCoinDisplay(wallet){
   if(walletData[wallet]){
     document.getElementById("wallet-coin").innerText = walletData[wallet].coins + " $WOLF";
@@ -141,13 +139,11 @@ function updateCoinDisplay(wallet){
   }
 }
 
-// Load tampilan coin saat halaman dibuka
 window.addEventListener("load", ()=>{
   const walletInput = document.getElementById("wallet-input").value.trim();
   updateCoinDisplay(walletInput);
 });
 
-// Submit wallet
 document.getElementById("gform").addEventListener("submit", function(e){
   e.preventDefault();
   const walletInput = document.getElementById("wallet-input").value.trim();
@@ -155,16 +151,22 @@ document.getElementById("gform").addEventListener("submit", function(e){
   if(!done.every(v=>v)){alert("Please complete Step 1 first!"); return;}
 
   if(!walletData[walletInput]){
-    walletData[walletInput] = { coins: 1000 }; // beri 1000 $WOLF
+    if(registeredWallets.length >= 150){
+      alert("⚠️ Maximum 150 wallets reached. You cannot claim $WOLF anymore.");
+      return;
+    }
+    walletData[walletInput] = { coins: 1000 };
     localStorage.setItem("walletData", JSON.stringify(walletData));
     alert("✅ Wallet registered! You got 1000 $WOLF!");
+    
+    registeredWallets.push(walletInput);
+    localStorage.setItem("registeredWallets", JSON.stringify(registeredWallets));
   } else {
     alert("⚠️ Wallet already registered");
   }
 
   updateCoinDisplay(walletInput);
 
-  // Tetap simpan Google Form
   let submittedWallets = JSON.parse(localStorage.getItem("submittedWallets")||"[]");
   if(!submittedWallets.includes(walletInput)){
     submittedWallets.push(walletInput);
