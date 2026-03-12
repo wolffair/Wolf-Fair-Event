@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>WOLF FAIR Genesis Giveaway</title>
+
 <style>
 body{
   margin:0;
@@ -11,7 +12,6 @@ body{
   text-align:center;
   background:#000;
   overflow:hidden;
-  padding:0;
 }
 
 /* Container */
@@ -32,6 +32,7 @@ h1{
   color:#f5a623;
   letter-spacing:2px;
 }
+
 .subtitle{
   color:#aaa;
   margin-bottom:25px;
@@ -63,14 +64,17 @@ button{
   cursor:pointer;
   transition:0.3s;
 }
+
 .twitter{
   background:#1DA1F2;
   color:white;
 }
+
 .form{
   background:#f5a623;
   color:black;
 }
+
 button:hover{
   transform:scale(1.05);
   opacity:0.9;
@@ -92,7 +96,7 @@ button:hover{
   font-size:14px;
 }
 
-/* 3D Canvas Background */
+/* 3D Canvas */
 #bg-canvas{
   position:fixed;
   top:0;
@@ -103,9 +107,9 @@ button:hover{
 }
 </style>
 </head>
+
 <body>
 
-<!-- 3D Background -->
 <canvas id="bg-canvas"></canvas>
 
 <div class="container">
@@ -120,23 +124,34 @@ button:hover{
 <p>Join the pack and become one of the early holders of <b>$WOLF</b>.</p>
 </div>
 
+<!-- STEP 1 -->
 <div class="step">
 <h2>Step 1</h2>
-<p>Like and Retweet the official event post</p>
+<p>Like, Comment and Share the official event post</p>
+
 <a href="https://twitter.com/intent/like?tweet_id=ID_TWEET_KAMU" target="_blank">
 <button class="twitter">👍 Like Tweet</button>
 </a>
-<a href="https://twitter.com/intent/retweet?tweet_id=ID_TWEET_KAMU" target="_blank">
-<button class="twitter">🔁 Retweet Event</button>
+
+<a href="https://twitter.com/intent/tweet?in_reply_to=ID_TWEET_KAMU" target="_blank">
+<button class="twitter">💬 Comment Tweet</button>
 </a>
+
+<a href="https://twitter.com/intent/tweet?url=LINK_TWEET_KAMU" target="_blank">
+<button class="twitter">📢 Share Tweet</button>
+</a>
+
 </div>
 
+<!-- STEP 2 -->
 <div class="step">
 <h2>Step 2</h2>
 <p>Submit your Solana wallet address</p>
+
 <a href="https://forms.gle/QZGCeAHsLZY52Smt8" target="_blank">
 <button class="form">📋 Submit Wallet</button>
 </a>
+
 </div>
 
 <div class="reward">
@@ -148,37 +163,74 @@ button:hover{
 WOLF FAIR • Join the pack & stay ready!
 </div>
 
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
 <script>
-// 3D Background
 const canvas = document.getElementById('bg-canvas');
+
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight,0.1,1000);
-const renderer = new THREE.WebGLRenderer({canvas, alpha:true});
+const camera = new THREE.PerspectiveCamera(
+75,
+window.innerWidth/window.innerHeight,
+0.1,
+1000
+);
+
+const renderer = new THREE.WebGLRenderer({
+canvas,
+alpha:true
+});
+
 renderer.setSize(window.innerWidth, window.innerHeight);
+
 camera.position.z = 30;
 
 const geometry = new THREE.BufferGeometry();
 const count = 1500;
+
 const positions = new Float32Array(count * 3);
-for(let i=0;i<count*3;i++) positions[i]=(Math.random()-0.5)*100;
-geometry.setAttribute('position', new THREE.BufferAttribute(positions,3));
-const material = new THREE.PointsMaterial({color:0x00ffff, size:0.2});
+
+for(let i=0;i<count*3;i++){
+positions[i]=(Math.random()-0.5)*100;
+}
+
+geometry.setAttribute(
+'position',
+new THREE.BufferAttribute(positions,3)
+);
+
+const material = new THREE.PointsMaterial({
+color:0x00ffff,
+size:0.2
+});
+
 const points = new THREE.Points(geometry, material);
+
 scene.add(points);
 
 function animate(){
-  requestAnimationFrame(animate);
-  points.rotation.y += 0.001;
-  points.rotation.x += 0.0005;
-  renderer.render(scene,camera);
+
+requestAnimationFrame(animate);
+
+points.rotation.y += 0.001;
+points.rotation.x += 0.0005;
+
+renderer.render(scene,camera);
+
 }
+
 animate();
 
 window.addEventListener('resize',()=>{
-  camera.aspect = window.innerWidth/window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth,window.innerHeight);
+
+camera.aspect = window.innerWidth/window.innerHeight;
+
+camera.updateProjectionMatrix();
+
+renderer.setSize(window.innerWidth,window.innerHeight);
+
 });
 </script>
 
