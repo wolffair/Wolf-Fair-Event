@@ -59,7 +59,7 @@ Join the pack, complete the steps, and be part of the beginning. 🐺🚀
 <div class="step">
 <h2>Step 1: Complete Tasks</h2>
 <div><a href="https://x.com/WolfFairOfficial" target="_blank"><button class="twitter" id="post1">🐦 Follow Twitter</button></a></div>
-<div><a href="https://t.me/WolfFairCommunity" target="_blank"><button class="twitter" id="post2">📢 Join Telegram</button></a></div>
+<div><a href="https://t.me/+7Lpf7AuRg98wZmZl" target="_blank"><button class="twitter" id="post2">📢 Join Telegram</button></a></div>
 <div><a href="https://x.com/i/status/2031240023883059391" target="_blank"><button class="twitter" id="post3">❤️ Like • 💬 Comment • 🔁 Share</button></a></div>
 <p id="all-done">✅ Step 1 Completed! You can submit your wallet.</p>
 </div>
@@ -80,7 +80,7 @@ Join the pack, complete the steps, and be part of the beginning. 🐺🚀
   <p>Tap the coin to claim your $WOLF! 🎯</p>
   <div style="position:relative; width:150px; height:150px; margin:30px auto;">
     <img id="coin" src="https://i.ibb.co/8M5Zg3Z/wolf-coin.png" style="width:100%; cursor:pointer; transition: transform 0.3s;">
-    <img id="hammer" src="https://i.ibb.co/Tk1s3RZ/hammer.png" style="position:absolute; left:50%; top:50%; width:60px; transform:translateX(-50%) scale(0); transition: transform 0.2s;">
+    <img id="hammer" src="https://i.ibb.co/Tk1s3RZ/hammer.png" style="position:absolute; left:50%; top:50%; width:60px; transform:translate(-50%, -50%) scale(0); transition: transform 0.2s;">
   </div>
   <p id="tap-msg" style="color:limegreen; font-weight:bold; min-height:24px;"></p>
 </div>
@@ -89,7 +89,10 @@ Join the pack, complete the steps, and be part of the beginning. 🐺🚀
 <script>
 // Step 1
 let done = [false,false,false];
-function markDone(i){done[i]=true;if(done.every(v=>v)) document.getElementById("all-done").style.display="block";}
+function markDone(i){
+  done[i]=true;
+  if(done.every(v=>v)) document.getElementById("all-done").style.display="block";
+}
 document.getElementById("post1").addEventListener("click",()=>markDone(0));
 document.getElementById("post2").addEventListener("click",()=>markDone(1));
 document.getElementById("post3").addEventListener("click",()=>markDone(2));
@@ -172,18 +175,18 @@ coin.addEventListener("click", () => {
   }
 
   walletData[walletInput].coins += addCoins;
-  tapMsg.innerText = `🎉 +${addCoins} $WOLF!`;
-
   localStorage.setItem("walletData", JSON.stringify(walletData));
+  tapMsg.innerText = `🎉 +${addCoins} $WOLF!`;
   updateCoinDisplay(walletInput);
 
+  // Animasi koin & hammer
   const randX = Math.floor(Math.random()*80 - 40);
   const randY = Math.floor(Math.random()*80 - 40);
   const randScale = Math.random()*0.5 + 0.75;
   coin.style.transform = `translate(${randX}px, ${randY}px) scale(${randScale})`;
 
-  hammer.style.transform = `translateX(-50%) scale(1) rotate(${Math.random()*30-15}deg)`;
-  setTimeout(()=>{hammer.style.transform = "translateX(-50%) scale(0) rotate(0deg)";}, 200);
+  hammer.style.transform = `translate(-50%, -50%) scale(1) rotate(${Math.random()*30-15}deg)`;
+  setTimeout(()=>{hammer.style.transform = "translate(-50%, -50%) scale(0) rotate(0deg)";}, 200);
 });
 </script>
 
