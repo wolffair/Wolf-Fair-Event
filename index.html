@@ -34,7 +34,6 @@ body{
   border-radius:15px;
   box-shadow:0 0 30px rgba(255,215,0,0.18);
   z-index:2;
-  pointer-events:auto;
 }
 
 h1{
@@ -84,16 +83,16 @@ h1{
   line-height:1.5;
 }
 
-button{
+button,
+.action-btn{
   padding:14px 22px;
   margin:8px;
   border:none;
   border-radius:10px;
   font-size:16px;
   font-weight:bold;
-  cursor:pointer;
-  transition:0.25s;
   min-height:52px;
+  transition:0.25s;
   position:relative;
   z-index:4;
   -webkit-appearance:none;
@@ -101,6 +100,18 @@ button{
   -webkit-tap-highlight-color:transparent;
   touch-action:manipulation;
   user-select:none;
+}
+
+button{
+  cursor:pointer;
+}
+
+.action-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  cursor:pointer;
 }
 
 .twitter{
@@ -123,7 +134,8 @@ button{
   color:white;
 }
 
-button:hover{
+button:hover,
+.action-btn:hover{
   transform:translateY(-1px);
   opacity:0.95;
 }
@@ -136,7 +148,7 @@ button:disabled{
 
 .done{
   background:#22c55e !important;
-  color:white;
+  color:white !important;
 }
 
 .done::after{
@@ -247,7 +259,8 @@ button:disabled{
     gap:8px;
   }
 
-  button{
+  button,
+  .action-btn{
     width:100%;
     max-width:320px;
     margin:4px 0;
@@ -297,7 +310,8 @@ button:disabled{
     font-size:24px;
   }
 
-  button{
+  button,
+  .action-btn{
     max-width:none;
     width:100%;
     font-size:14px;
@@ -329,9 +343,9 @@ button:disabled{
     <p>Like, Retweet, and Comment on the official post</p>
 
     <div class="link-row">
-      <button id="likeBtn" class="twitter" type="button">👍 Like Tweet</button>
-      <button id="rtBtn" class="twitter" type="button">🔁 Retweet Event</button>
-      <button id="commentBtn" class="comment" type="button">💬 Comment</button>
+      <a id="likeBtn" class="action-btn twitter" href="https://x.com/intent/like?tweet_id=2031240023883059391" target="_blank" rel="noopener noreferrer">👍 Like Tweet</a>
+      <a id="rtBtn" class="action-btn twitter" href="https://x.com/intent/retweet?tweet_id=2031240023883059391" target="_blank" rel="noopener noreferrer">🔁 Retweet Event</a>
+      <a id="commentBtn" class="action-btn comment" href="https://x.com/i/status/2031240023883059391" target="_blank" rel="noopener noreferrer">💬 Comment</a>
     </div>
 
     <div style="margin-top:10px;">
@@ -364,10 +378,6 @@ button:disabled{
   const REWARD = 1000;
   const GOOGLE_FORM_URL = "https://forms.gle/QZGCeAHsLZY52Smt8";
 
-  const likeUrl = `https://x.com/intent/like?tweet_id=${encodeURIComponent(TWEET_ID)}`;
-  const retweetUrl = `https://x.com/intent/retweet?tweet_id=${encodeURIComponent(TWEET_ID)}`;
-  const commentUrl = `https://x.com/i/status/${encodeURIComponent(TWEET_ID)}`;
-
   const elements = {
     likeBtn: document.getElementById("likeBtn"),
     rtBtn: document.getElementById("rtBtn"),
@@ -380,31 +390,20 @@ button:disabled{
 
   let isVerifying = false;
   let isSubmitting = false;
+  let currentWallet = "";
 
-  const walletInput = window.prompt("Enter your Solana wallet address:");
-  const wallet = typeof walletInput === "string" ? walletInput.trim() : "";
-
-  if (!wallet) {
-    window.alert("Wallet is required to participate!");
-    disableAllActions();
-    throw new Error("Wallet not provided");
+  function getUserKey(wallet) {
+    return `wolf_user_${wallet}`;
   }
 
-  const userKey = `wolf_user_${wallet}`;
-
-  function disableAllActions() {
-    elements.likeBtn.disabled = true;
-    elements.rtBtn.disabled = true;
-    elements.commentBtn.disabled = true;
-    elements.verifyBtn.disabled = true;
-    elements.submitBtn.disabled = true;
+  function askWallet() {
+    const walletInput = window.prompt("Enter your Solana wallet address:");
+    const wallet = typeof walletInput === "string" ? walletInput.trim() : "";
+    return wallet;
   }
 
   function openExternal(url) {
-    const newWindow = window.open(url, "_blank");
-    if (!newWindow || newWindow.closed || typeof newWindow.closed === "undefined") {
-      window.location.href = url;
-    }
+    window.location.href = url;
   }
 
   function safeParseJSON(value, fallback) {
@@ -417,7 +416,16 @@ button:disabled{
   }
 
   function getStatus() {
-    const raw = localStorage.getItem(userKey);
+    if (!currentWallet) {
+      return {
+        like: false,
+        retweet: false,
+        comment: false,
+        wallet: false
+      };
+    }
+
+    const raw = localStorage.getItem(getUserKey(currentWallet));
     return safeParseJSON(raw, {
       like: false,
       retweet: false,
@@ -427,7 +435,9 @@ button:disabled{
   }
 
   function saveStatus(status) {
-    localStorage.setItem(userKey, JSON.stringify({
+    if (!currentWallet) return;
+
+    localStorage.setItem(getUserKey(currentWallet), JSON.stringify({
       like: !!status.like,
       retweet: !!status.retweet,
       comment: !!status.comment,
@@ -473,9 +483,6 @@ button:disabled{
     }
 
     elements.verifyBtn.disabled = isVerifying || isSubmitting;
-    elements.likeBtn.disabled = isSubmitting;
-    elements.rtBtn.disabled = isSubmitting;
-    elements.commentBtn.disabled = isSubmitting;
   }
 
   async function parseJsonResponse(response) {
@@ -500,9 +507,7 @@ button:disabled{
     setButtonBusy(elements.verifyBtn, "⏳ Verifying...", verifyOriginalText, true);
 
     try {
-      const url = `/api/verify-x-actions?wallet=${encodeURIComponent(wallet)}&tweetId=${encodeURIComponent(TWEET_ID)}`;
-
-      const response = await fetch(url, {
+      const response = await fetch(`/api/verify-x-actions?tweetId=${encodeURIComponent(TWEET_ID)}`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -519,6 +524,14 @@ button:disabled{
       if (!result.xConnected) {
         setStatusMessage("Please connect your X account first.", true);
         return;
+      }
+
+      if (!currentWallet) {
+        currentWallet = askWallet();
+        if (!currentWallet) {
+          setStatusMessage("Wallet is required to save verification status.", true);
+          return;
+        }
       }
 
       const status = getStatus();
@@ -551,7 +564,16 @@ button:disabled{
   async function submitWallet() {
     if (isSubmitting || isVerifying) return;
 
+    if (!currentWallet) {
+      currentWallet = askWallet();
+      if (!currentWallet) {
+        setRewardMessage("Wallet is required to continue.", true);
+        return;
+      }
+    }
+
     const status = getStatus();
+
     if (!(status.like && status.retweet && status.comment)) {
       setRewardMessage("Complete and verify all actions first.", true);
       return;
@@ -578,7 +600,7 @@ button:disabled{
           "Accept": "application/json"
         },
         body: JSON.stringify({
-          wallet,
+          wallet: currentWallet,
           tweetId: TWEET_ID
         })
       });
@@ -605,19 +627,8 @@ button:disabled{
     }
   }
 
-  function bindPress(button, handler) {
-    button.addEventListener("click", handler, { passive: true });
-    button.addEventListener("touchend", (event) => {
-      event.preventDefault();
-      handler();
-    }, { passive: false });
-  }
-
-  bindPress(elements.likeBtn, () => openExternal(likeUrl));
-  bindPress(elements.rtBtn, () => openExternal(retweetUrl));
-  bindPress(elements.commentBtn, () => openExternal(commentUrl));
-  bindPress(elements.verifyBtn, verifyActions);
-  bindPress(elements.submitBtn, submitWallet);
+  elements.verifyBtn.addEventListener("click", verifyActions);
+  elements.submitBtn.addEventListener("click", submitWallet);
 
   updateButtons();
 })();
