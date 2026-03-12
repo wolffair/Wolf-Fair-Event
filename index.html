@@ -476,7 +476,7 @@ button:disabled{
   "use strict";
 
   const REWARD = 1000;
-  const API_URL = "https://script.google.com/macros/s/AKfycbz2wY7TMVKpFg9AtAbDDL74UB58YEGB7N_X13G9IOEc6HdhLhNhoqumSCoaIKkIqKST/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbw_AazgCS7jMRxn0SHBpoOh42x9ZxmeJNRbZ7UXH1DJYaMB_wQr1SmeyafKUqCr2qO4/exec";
   const COIN_TARGET = 1000;
   const COIN_PER_TAP = 5;
 
@@ -603,14 +603,6 @@ button:disabled{
 
     wolf.style.left = Math.floor(Math.random() * (maxX + 1)) + "px";
     wolf.style.top = Math.floor(Math.random() * (maxY + 1)) + "px";
-  }
-
-  function stopGame() {
-    gameRunning = false;
-    if (moveTimer) {
-      clearInterval(moveTimer);
-      moveTimer = null;
-    }
   }
 
   function startGame() {
@@ -884,4 +876,4 @@ button:disabled{
 </script>
 
 </body>
-</html>
+</html> 
