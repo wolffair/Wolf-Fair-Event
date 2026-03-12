@@ -5,9 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>WOLF FAIR Genesis Giveaway</title>
 <style>
-*{
-  box-sizing:border-box;
-}
+*{ box-sizing:border-box; }
 
 html, body{
   margin:0;
@@ -102,9 +100,7 @@ button,
   user-select:none;
 }
 
-button{
-  cursor:pointer;
-}
+button{ cursor:pointer; }
 
 .action-btn{
   display:inline-flex;
@@ -114,25 +110,11 @@ button{
   cursor:pointer;
 }
 
-.twitter{
-  background:#1DA1F2;
-  color:white;
-}
-
-.comment{
-  background:#ff9900;
-  color:white;
-}
-
-.form{
-  background:#f5a623;
-  color:black;
-}
-
-.verify{
-  background:#22c55e;
-  color:white;
-}
+.twitter{ background:#1DA1F2; color:white; }
+.comment{ background:#ff9900; color:white; }
+.form{ background:#f5a623; color:black; }
+.verify{ background:#22c55e; color:white; }
+.wallet-btn{ background:#8b5cf6; color:white; }
 
 button:hover,
 .action-btn:hover{
@@ -188,21 +170,18 @@ button:disabled{
   pointer-events:none;
 }
 
-#statusMsg{
+#statusMsg,
+#rewardMsg,
+#walletStatus{
   margin-top:14px;
-  color:#f5a623;
   font-weight:bold;
   min-height:24px;
   line-height:1.5;
 }
 
-#rewardMsg{
-  margin-top:10px;
-  color:#22c55e;
-  font-weight:bold;
-  min-height:24px;
-  line-height:1.5;
-}
+#statusMsg{ color:#f5a623; }
+#rewardMsg{ color:#22c55e; }
+#walletStatus{ color:#a78bfa; }
 
 .link-row{
   display:flex;
@@ -305,7 +284,6 @@ button:disabled{
   transition:width 0.15s ease;
 }
 
-/* Tablet */
 @media (max-width: 768px){
   .container{
     width:calc(100% - 24px);
@@ -359,27 +337,7 @@ button:disabled{
     font-size:15px;
   }
 
-  .reward{
-    padding:14px;
-    margin-top:18px;
-    font-size:15px;
-  }
-
-  .footer{
-    margin-top:22px;
-    font-size:13px;
-  }
-
-  #statusMsg,
-  #rewardMsg{
-    font-size:14px;
-    min-height:20px;
-  }
-
-  #gameArea{
-    height:220px;
-  }
-
+  #gameArea{ height:220px; }
   #wolfCoin{
     width:58px;
     height:58px;
@@ -387,29 +345,20 @@ button:disabled{
   }
 }
 
-/* Small phones */
 @media (max-width: 420px){
   .container{
     width:calc(100% - 16px);
     padding:18px 12px;
   }
 
-  h1{
-    font-size:24px;
-  }
-
-  .subtitle{
-    font-size:15px;
-  }
-
+  h1{ font-size:24px; }
+  .subtitle{ font-size:15px; }
   .description{
     font-size:14px;
     padding:14px;
   }
 
-  .step h2{
-    font-size:24px;
-  }
+  .step h2{ font-size:24px; }
 
   button,
   .action-btn{
@@ -419,14 +368,7 @@ button:disabled{
     padding:12px 14px;
   }
 
-  .reward{
-    font-size:14px;
-  }
-
-  #gameArea{
-    height:200px;
-  }
-
+  #gameArea{ height:200px; }
   #wolfCoin{
     width:54px;
     height:54px;
@@ -452,6 +394,13 @@ button:disabled{
     <p>Welcome to the <b>WOLF FAIR Genesis Event</b> – an exclusive giveaway for early supporters of the WOLF community.</p>
     <p>Complete the steps below to get a chance to receive <b>$WOLF tokens</b> directly to your Solana wallet.</p>
     <p>🎁 Total reward: <b>1000 $WOLF</b>. Rewards distributed once the WOLF token launches.</p>
+  </div>
+
+  <div class="step">
+    <h2>Wallet</h2>
+    <p>Connect your Phantom wallet first</p>
+    <button id="connectWalletBtn" class="wallet-btn" type="button">🟣 Connect Phantom</button>
+    <div id="walletStatus"></div>
   </div>
 
   <div class="step">
@@ -517,8 +466,11 @@ button:disabled{
   const GOOGLE_FORM_URL = "https://forms.gle/QZGCeAHsLZY52Smt8";
   const COIN_TARGET = 1000;
   const COIN_PER_TAP = 5;
+  const TWEET_ID = "2031240023883059391";
 
   const elements = {
+    connectWalletBtn: document.getElementById("connectWalletBtn"),
+    walletStatus: document.getElementById("walletStatus"),
     likeBtn: document.getElementById("likeBtn"),
     rtBtn: document.getElementById("rtBtn"),
     commentBtn: document.getElementById("commentBtn"),
@@ -545,13 +497,42 @@ button:disabled{
   elements.coinTarget.textContent = COIN_TARGET;
   elements.tapValue.textContent = COIN_PER_TAP;
 
-  function getUserKey(wallet) {
-    return `wolf_user_${wallet}`;
+  function getPhantomProvider() {
+    const provider = window.phantom?.solana || window.solana;
+    if (provider?.isPhantom) return provider;
+    return null;
   }
 
-  function askWallet() {
-    const walletInput = window.prompt("Enter your Solana wallet address:");
-    return typeof walletInput === "string" ? walletInput.trim() : "";
+  async function connectPhantom() {
+    const provider = getPhantomProvider();
+
+    if (!provider) {
+      elements.walletStatus.textContent = "Phantom wallet not found. Install Phantom first.";
+      elements.walletStatus.style.color = "#ff6b6b";
+      window.open("https://phantom.app/", "_blank");
+      return;
+    }
+
+    try {
+      const response = await provider.connect();
+      currentWallet = response.publicKey.toString();
+      elements.walletStatus.textContent = `Connected: ${shortWallet(currentWallet)}`;
+      elements.walletStatus.style.color = "#a78bfa";
+      updateButtons();
+    } catch (error) {
+      console.error(error);
+      elements.walletStatus.textContent = "Wallet connection cancelled or failed.";
+      elements.walletStatus.style.color = "#ff6b6b";
+    }
+  }
+
+  function shortWallet(wallet) {
+    if (!wallet) return "";
+    return wallet.slice(0, 4) + "..." + wallet.slice(-4);
+  }
+
+  function getUserKey(wallet) {
+    return `wolf_user_${wallet}`;
   }
 
   function openExternal(url) {
@@ -579,9 +560,7 @@ button:disabled{
   }
 
   function getStatus() {
-    if (!currentWallet) {
-      return getDefaultStatus();
-    }
+    if (!currentWallet) return getDefaultStatus();
 
     const raw = localStorage.getItem(getUserKey(currentWallet));
     return safeParseJSON(raw, getDefaultStatus());
@@ -665,13 +644,21 @@ button:disabled{
     } else {
       stopGame();
     }
+
+    if (currentWallet) {
+      elements.walletStatus.textContent = `Connected: ${shortWallet(currentWallet)}`;
+      elements.walletStatus.style.color = "#a78bfa";
+      elements.connectWalletBtn.textContent = "🟣 Phantom Connected";
+      elements.connectWalletBtn.disabled = true;
+    }
   }
 
-  function ensureWalletForStatus() {
+  function ensureWalletConnected() {
     if (!currentWallet) {
-      currentWallet = askWallet();
+      setStatusMessage("Connect Phantom wallet first.", true);
+      return false;
     }
-    return !!currentWallet;
+    return true;
   }
 
   function moveWolf() {
@@ -731,11 +718,7 @@ button:disabled{
 
   async function verifyActions() {
     if (isVerifying || isSubmitting) return;
-
-    if (!ensureWalletForStatus()) {
-      setStatusMessage("Wallet is required to save verification status.", true);
-      return;
-    }
+    if (!ensureWalletConnected()) return;
 
     isVerifying = true;
     updateButtons();
@@ -805,11 +788,7 @@ button:disabled{
 
   async function submitWallet() {
     if (isSubmitting || isVerifying) return;
-
-    if (!ensureWalletForStatus()) {
-      setRewardMessage("Wallet is required to continue.", true);
-      return;
-    }
+    if (!ensureWalletConnected()) return;
 
     const status = getStatus();
 
@@ -840,8 +819,8 @@ button:disabled{
       saveStatus(status);
       updateButtons();
 
-      setRewardMessage(`🎉 You got ${REWARD} $WOLF!`);
-      openExternal(GOOGLE_FORM_URL);
+      setRewardMessage(`🎉 Wallet ${shortWallet(currentWallet)} is ready for ${REWARD} $WOLF!`);
+      openExternal(GOOGLE_FORM_URL + `?entry_wallet=${encodeURIComponent(currentWallet)}&tweet_id=${encodeURIComponent(TWEET_ID)}`);
     } catch (error) {
       console.error(error);
       setRewardMessage("Claim request failed.", true);
@@ -852,10 +831,21 @@ button:disabled{
     }
   }
 
+  elements.connectWalletBtn.addEventListener("click", connectPhantom);
   elements.verifyBtn.addEventListener("click", verifyActions);
   elements.submitBtn.addEventListener("click", submitWallet);
   elements.wolfCoin.addEventListener("click", handleWolfTap);
   elements.wolfCoin.addEventListener("touchstart", handleWolfTap, { passive: true });
+
+  const provider = getPhantomProvider();
+  if (provider) {
+    provider.connect({ onlyIfTrusted: true })
+      .then((response) => {
+        currentWallet = response.publicKey.toString();
+        updateButtons();
+      })
+      .catch(() => {});
+  }
 
   updateButtons();
 })();
