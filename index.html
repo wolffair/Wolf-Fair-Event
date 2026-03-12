@@ -114,6 +114,10 @@ Join the pack, complete the steps, and be part of the beginning. 🐺🚀
   <button type="submit" class="form">📋 Submit Wallet</button>
 </form>
 <p id="submitted-msg">✅ Wallet submitted! 🎉</p>
+
+<!-- Tampilkan coin per user -->
+<p>Your Wallet Coin: <span id="wallet-coin">0 $WOLF</span></p>
+
 <iframe name="hidden_iframe" style="display:none;"></iframe>
 </div>
 </div>
@@ -124,13 +128,48 @@ function markDone(i){done[i]=true;if(done.every(v=>v)) document.getElementById("
 document.getElementById("post1").addEventListener("click",()=>markDone(0));
 document.getElementById("post2").addEventListener("click",()=>markDone(1));
 document.getElementById("post3").addEventListener("click",()=>markDone(2));
-document.getElementById("gform").addEventListener("submit",function(e){
-  const walletInput=document.getElementById("wallet-input").value.trim();
-  if(!done.every(v=>v)){e.preventDefault();alert("Please complete Step 1 first!");return;}
-  let submittedWallets=JSON.parse(localStorage.getItem("submittedWallets")||"[]");
-  if(submittedWallets.includes(walletInput)){e.preventDefault();alert("This wallet has already been submitted! ❌");return;}
-  submittedWallets.push(walletInput);
-  localStorage.setItem("submittedWallets",JSON.stringify(submittedWallets));
+
+// Ambil data coin per browser user
+let walletData = JSON.parse(localStorage.getItem("walletData") || "{}");
+
+// Fungsi update tampilan coin
+function updateCoinDisplay(wallet){
+  if(walletData[wallet]){
+    document.getElementById("wallet-coin").innerText = walletData[wallet].coins + " $WOLF";
+  } else {
+    document.getElementById("wallet-coin").innerText = "0 $WOLF";
+  }
+}
+
+// Load tampilan coin saat halaman dibuka
+window.addEventListener("load", ()=>{
+  const walletInput = document.getElementById("wallet-input").value.trim();
+  updateCoinDisplay(walletInput);
+});
+
+// Submit wallet
+document.getElementById("gform").addEventListener("submit", function(e){
+  e.preventDefault();
+  const walletInput = document.getElementById("wallet-input").value.trim();
+
+  if(!done.every(v=>v)){alert("Please complete Step 1 first!"); return;}
+
+  if(!walletData[walletInput]){
+    walletData[walletInput] = { coins: 1000 }; // beri 1000 $WOLF
+    localStorage.setItem("walletData", JSON.stringify(walletData));
+    alert("✅ Wallet registered! You got 1000 $WOLF!");
+  } else {
+    alert("⚠️ Wallet already registered");
+  }
+
+  updateCoinDisplay(walletInput);
+
+  // Tetap simpan Google Form
+  let submittedWallets = JSON.parse(localStorage.getItem("submittedWallets")||"[]");
+  if(!submittedWallets.includes(walletInput)){
+    submittedWallets.push(walletInput);
+    localStorage.setItem("submittedWallets", JSON.stringify(submittedWallets));
+  }
   document.getElementById("submitted-msg").style.display="block";
 });
 </script>
