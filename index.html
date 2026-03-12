@@ -50,6 +50,14 @@ line-height:1.7;
 margin:30px 0;
 }
 
+input{
+padding:12px;
+width:260px;
+border-radius:6px;
+border:none;
+margin-top:10px;
+}
+
 button{
 padding:14px 26px;
 margin:10px;
@@ -100,7 +108,6 @@ z-index:-1;
 }
 
 </style>
-
 </head>
 
 <body>
@@ -113,10 +120,9 @@ z-index:-1;
 <p class="subtitle">Genesis $WOLF Giveaway</p>
 
 <div class="description">
-<p>Welcome to the <b>WOLF FAIR Genesis Event</b>. This giveaway is for early supporters of the WOLF community.</p>
-<p>Participants who complete the steps below will have a chance to receive <b>$WOLF tokens</b> directly to their Solana wallet.</p>
-<p>🎁 Total reward: <b>1000 $WOLF</b>. Winners will be selected randomly after the event ends.</p>
-<p>Join the pack and become one of the early holders of <b>$WOLF</b>.</p>
+<p>Welcome to the <b>WOLF FAIR Genesis Event</b>.</p>
+<p>Participants who complete the steps below will have a chance to receive <b>$WOLF tokens</b>.</p>
+<p>🎁 Total reward: <b>1000 $WOLF</b></p>
 </div>
 
 <div class="step">
@@ -141,17 +147,13 @@ z-index:-1;
 
 <p>Submit your Solana wallet address</p>
 
-<iframe
-src="https://docs.google.com/forms/d/e/1FAIpQLSf5p6xgLVURRRM1eLO6IsTrPIJTbdW4kf3bA7MTJcWwoVjkbQ/viewform?embedded=true"
-width="100%"
-height="600"
-frameborder="0"
-marginheight="0"
-marginwidth="0">
+<input id="wallet" placeholder="Enter Solana Wallet">
 
-Loading…
+<br>
 
-</iframe>
+<button class="form" onclick="sendWallet()">Submit Wallet</button>
+
+<p id="msg"></p>
 
 </div>
 
@@ -159,17 +161,42 @@ Loading…
 
 <h2>🎁 Reward</h2>
 
-<p>1000 $WOLF tokens will be distributed among winners!</p>
+<p>1000 $WOLF tokens will be distributed among winners</p>
 
 </div>
 
 <div class="footer">
 
-WOLF FAIR • Join the pack & stay ready!
+WOLF FAIR • Join the pack
 
 </div>
 
 </div>
+
+<script>
+
+function sendWallet(){
+
+let wallet = document.getElementById("wallet").value;
+
+let url="https://docs.google.com/forms/d/e/1FAIpQLSf5p6xgLVURRRM1eLO6IsTrPIJTbdW4kf3bA7MTJcWwoVjkbQ/formResponse";
+
+let data = new FormData();
+
+/* GANTI dengan entry ID dari Google Form */
+data.append("entry.1234567890", wallet);
+
+fetch(url,{
+method:"POST",
+mode:"no-cors",
+body:data
+});
+
+document.getElementById("msg").innerHTML="Wallet submitted successfully";
+
+}
+
+</script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
@@ -179,12 +206,7 @@ const canvas = document.getElementById('bg-canvas');
 
 const scene = new THREE.Scene();
 
-const camera = new THREE.PerspectiveCamera(
-75,
-window.innerWidth/window.innerHeight,
-0.1,
-1000
-);
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight,0.1,1000);
 
 const renderer = new THREE.WebGLRenderer({canvas, alpha:true});
 
@@ -198,18 +220,11 @@ const count = 1500;
 
 const positions = new Float32Array(count * 3);
 
-for(let i=0;i<count*3;i++)
-positions[i]=(Math.random()-0.5)*100;
+for(let i=0;i<count*3;i++) positions[i]=(Math.random()-0.5)*100;
 
-geometry.setAttribute(
-'position',
-new THREE.BufferAttribute(positions,3)
-);
+geometry.setAttribute('position', new THREE.BufferAttribute(positions,3));
 
-const material = new THREE.PointsMaterial({
-color:0x00ffff,
-size:0.2
-});
+const material = new THREE.PointsMaterial({color:0x00ffff, size:0.2});
 
 const points = new THREE.Points(geometry, material);
 
@@ -220,6 +235,7 @@ function animate(){
 requestAnimationFrame(animate);
 
 points.rotation.y += 0.001;
+
 points.rotation.x += 0.0005;
 
 renderer.render(scene,camera);
@@ -227,16 +243,6 @@ renderer.render(scene,camera);
 }
 
 animate();
-
-window.addEventListener('resize',()=>{
-
-camera.aspect = window.innerWidth/window.innerHeight;
-
-camera.updateProjectionMatrix();
-
-renderer.setSize(window.innerWidth,window.innerHeight);
-
-});
 
 </script>
 
