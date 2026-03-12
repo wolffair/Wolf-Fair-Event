@@ -418,6 +418,7 @@ button:disabled{
     <p>Complete all required social tasks first</p>
 
     <div class="link-row">
+      <a id="followTwitterBtn" class="action-btn twitter" href="https://x.com/wolftwofair" target="_blank" rel="noopener noreferrer">🐺 Follow Twitter</a>
       <a id="likeBtn" class="action-btn twitter" href="https://x.com/intent/like?tweet_id=2031240023883059391" target="_blank" rel="noopener noreferrer">👍 Like Tweet</a>
       <a id="rtBtn" class="action-btn twitter" href="https://x.com/intent/retweet?tweet_id=2031240023883059391" target="_blank" rel="noopener noreferrer">🔁 Retweet Event</a>
       <a id="commentBtn" class="action-btn comment" href="https://x.com/i/status/2031240023883059391" target="_blank" rel="noopener noreferrer">💬 Comment</a>
@@ -480,6 +481,7 @@ button:disabled{
   const COIN_PER_TAP = 5;
 
   const elements = {
+    followTwitterBtn: document.getElementById("followTwitterBtn"),
     likeBtn: document.getElementById("likeBtn"),
     rtBtn: document.getElementById("rtBtn"),
     commentBtn: document.getElementById("commentBtn"),
@@ -508,6 +510,7 @@ button:disabled{
 
   function getDefaultStatus() {
     return {
+      followTwitter: false,
       like: false,
       retweet: false,
       comment: false,
@@ -534,6 +537,7 @@ button:disabled{
 
   function saveStatus(status) {
     localStorage.setItem("wolf_user_guest", JSON.stringify({
+      followTwitter: !!status.followTwitter,
       like: !!status.like,
       retweet: !!status.retweet,
       comment: !!status.comment,
@@ -556,7 +560,8 @@ button:disabled{
   }
 
   function isStep1Done(status) {
-    return !!status.like &&
+    return !!status.followTwitter &&
+      !!status.like &&
       !!status.retweet &&
       !!status.comment &&
       !!status.telegramChannel &&
@@ -591,17 +596,8 @@ button:disabled{
     wolf.style.top = Math.floor(Math.random() * (maxY + 1)) + "px";
   }
 
-  function stopGame() {
-    gameRunning = false;
-    if (moveTimer) {
-      clearInterval(moveTimer);
-      moveTimer = null;
-    }
-  }
-
   function startGame() {
     if (gameRunning) return;
-
     gameRunning = true;
     moveWolf();
 
@@ -623,7 +619,7 @@ button:disabled{
     const status = getStatus();
 
     if (!isStep1Done(status)) {
-      setStatusMessage("Complete Like, Retweet, Comment, Telegram Channel, and Telegram Group first.", true);
+      setStatusMessage("Complete Follow Twitter, Like, Retweet, Comment, Telegram Channel, and Telegram Group first.", true);
       return;
     }
 
@@ -657,6 +653,7 @@ button:disabled{
   function updateButtons() {
     const status = getStatus();
 
+    elements.followTwitterBtn.classList.toggle("done", !!status.followTwitter);
     elements.likeBtn.classList.toggle("done", !!status.like);
     elements.rtBtn.classList.toggle("done", !!status.retweet);
     elements.commentBtn.classList.toggle("done", !!status.comment);
@@ -693,6 +690,12 @@ button:disabled{
   }
 
   function verifyActions() {
+    const followTwitterDone = window.confirm("Have you already followed Twitter @wolftwofair?");
+    if (!followTwitterDone) {
+      setStatusMessage("Follow Twitter not completed.", true);
+      return;
+    }
+
     const likeDone = window.confirm("Have you already liked the tweet?");
     if (!likeDone) {
       setStatusMessage("Like not completed.", true);
@@ -724,6 +727,7 @@ button:disabled{
     }
 
     const status = getStatus();
+    status.followTwitter = true;
     status.like = true;
     status.retweet = true;
     status.comment = true;
