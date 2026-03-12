@@ -59,6 +59,7 @@ input[type=text]{
   display:none;
   margin-top:18px;
 }
+#coin:hover {transform: scale(1.1);}
 @media (max-width:480px){
   .container{margin:40px 15px; padding:40px;}
   h1{font-size:48px;}
@@ -117,6 +118,19 @@ Join the pack, complete the steps, and be part of the beginning. 🐺🚀
 
 <iframe name="hidden_iframe" style="display:none;"></iframe>
 </div>
+
+<div class="step" style="margin-top:40px;">
+  <h2>Step 3: Tap Your $WOLF Coin 🪙</h2>
+  <p>Tap the coin to claim your $WOLF! 🎯</p>
+  <div style="position:relative; width:150px; height:150px; margin:30px auto;">
+    <img id="coin" src="file_0000000088e072078575a8a8eef5f7f6.png" 
+         style="width:100%; cursor:pointer; transition: transform 0.3s;">
+    <img id="hammer" src="https://i.ibb.co/Tk1s3RZ/hammer.png" 
+         style="position:absolute; left:50%; top:50%; width:60px; transform:translateX(-50%) scale(0); transition: transform 0.2s;">
+  </div>
+  <p id="tap-msg" style="color:limegreen; font-weight:bold; min-height:24px;"></p>
+</div>
+
 </div>
 
 <script>
@@ -126,9 +140,8 @@ document.getElementById("post1").addEventListener("click",()=>markDone(0));
 document.getElementById("post2").addEventListener("click",()=>markDone(1));
 document.getElementById("post3").addEventListener("click",()=>markDone(2));
 
+// === Multi-wallet localStorage ===
 let walletData = JSON.parse(localStorage.getItem("walletData") || "{}");
-
-// Limit 150 wallets
 let registeredWallets = JSON.parse(localStorage.getItem("registeredWallets") || "[]");
 
 function updateCoinDisplay(wallet){
@@ -139,11 +152,13 @@ function updateCoinDisplay(wallet){
   }
 }
 
+// Load wallet display per user
 window.addEventListener("load", ()=>{
   const walletInput = document.getElementById("wallet-input").value.trim();
   updateCoinDisplay(walletInput);
 });
 
+// Submit wallet
 document.getElementById("gform").addEventListener("submit", function(e){
   e.preventDefault();
   const walletInput = document.getElementById("wallet-input").value.trim();
@@ -155,12 +170,12 @@ document.getElementById("gform").addEventListener("submit", function(e){
       alert("⚠️ Maximum 150 wallets reached. You cannot claim $WOLF anymore.");
       return;
     }
-    walletData[walletInput] = { coins: 1000 };
+    walletData[walletInput] = { coins: 0 }; // awal 0, klaim di tap-tap
     localStorage.setItem("walletData", JSON.stringify(walletData));
-    alert("✅ Wallet registered! You got 1000 $WOLF!");
     
     registeredWallets.push(walletInput);
     localStorage.setItem("registeredWallets", JSON.stringify(registeredWallets));
+    alert("✅ Wallet registered! Tap your coin below to claim your $WOLF!");
   } else {
     alert("⚠️ Wallet already registered");
   }
@@ -173,6 +188,41 @@ document.getElementById("gform").addEventListener("submit", function(e){
     localStorage.setItem("submittedWallets", JSON.stringify(submittedWallets));
   }
   document.getElementById("submitted-msg").style.display="block";
+});
+
+// ---------------- Tap-Tap $WOLF Game ----------------
+const coin = document.getElementById("coin");
+const hammer = document.getElementById("hammer");
+const tapMsg = document.getElementById("tap-msg");
+
+coin.addEventListener("click", () => {
+  const walletInput = document.getElementById("wallet-input").value.trim();
+  if(!walletInput || !walletData[walletInput]){
+    tapMsg.innerText = "⚠️ Submit your wallet first!";
+    return;
+  }
+
+  // Tap pertama +5, tap selanjutnya +10
+  if(walletData[walletInput].coins === 0){
+    walletData[walletInput].coins += 5; 
+    tapMsg.innerText = "🎉 +5 $WOLF!";
+  } else {
+    walletData[walletInput].coins += 10; 
+    tapMsg.innerText = "✨ +10 $WOLF!";
+  }
+
+  localStorage.setItem("walletData", JSON.stringify(walletData));
+  updateCoinDisplay(walletInput);
+
+  const randX = Math.floor(Math.random()*80 - 40);
+  const randY = Math.floor(Math.random()*80 - 40);
+  const randScale = Math.random()*0.5 + 0.75;
+  coin.style.transform = `translate(${randX}px, ${randY}px) scale(${randScale})`;
+
+  hammer.style.transform = `translateX(-50%) scale(1) rotate(${Math.random()*30-15}deg)`;
+  setTimeout(()=>{hammer.style.transform = "translateX(-50%) scale(0) rotate(0deg)";}, 200);
+
+  setTimeout(()=>{coin.style.transform = "translateX(-50%)"; tapMsg.innerText="";}, 500);
 });
 </script>
 
