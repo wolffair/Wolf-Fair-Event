@@ -79,8 +79,7 @@ Join the pack, complete the steps, and be part of the beginning. 🐺🚀
   <h2>Step 3: Tap Your $WOLF Coin 🪙</h2>
   <p>Tap the coin to claim your $WOLF! 🎯</p>
   <div style="position:relative; width:150px; height:150px; margin:30px auto;">
-    <!-- pastikan gambar ini sudah di folder yang sama dan rename jadi coin.png -->
-    <img id="coin" src="coin.png" style="width:100%; cursor:pointer; transition: transform 0.3s;">
+    <img id="coin" src="https://i.ibb.co/8M5Zg3Z/wolf-coin.png" style="width:100%; cursor:pointer; transition: transform 0.3s;">
     <img id="hammer" src="https://i.ibb.co/Tk1s3RZ/hammer.png" style="position:absolute; left:50%; top:50%; width:60px; transform:translateX(-50%) scale(0); transition: transform 0.2s;">
   </div>
   <p id="tap-msg" style="color:limegreen; font-weight:bold; min-height:24px;"></p>
@@ -147,7 +146,7 @@ document.getElementById("gform").addEventListener("submit", function(e){
   document.getElementById("submitted-msg").style.display="block";
 });
 
-// Tap-Tap $WOLF
+// Tap-Tap $WOLF dengan batas 1000
 const coin = document.getElementById("coin");
 const hammer = document.getElementById("hammer");
 const tapMsg = document.getElementById("tap-msg");
@@ -159,8 +158,21 @@ coin.addEventListener("click", () => {
     return;
   }
 
-  walletData[walletInput].coins += (walletData[walletInput].coins === 0) ? 5 : 10;
-  tapMsg.innerText = (walletData[walletInput].coins === 5) ? "🎉 +5 $WOLF!" : "✨ +10 $WOLF!";
+  // Batas maksimal 1000
+  if(walletData[walletInput].coins >= 1000){
+    walletData[walletInput].coins = 1000;
+    tapMsg.innerText = "⚠️ Maximum 1000 $WOLF reached!";
+    updateCoinDisplay(walletInput);
+    return;
+  }
+
+  let addCoins = (walletData[walletInput].coins === 0) ? 5 : 10;
+  if(walletData[walletInput].coins + addCoins > 1000){
+    addCoins = 1000 - walletData[walletInput].coins;
+  }
+
+  walletData[walletInput].coins += addCoins;
+  tapMsg.innerText = `🎉 +${addCoins} $WOLF!`;
 
   localStorage.setItem("walletData", JSON.stringify(walletData));
   updateCoinDisplay(walletInput);
@@ -172,11 +184,6 @@ coin.addEventListener("click", () => {
 
   hammer.style.transform = `translateX(-50%) scale(1) rotate(${Math.random()*30-15}deg)`;
   setTimeout(()=>{hammer.style.transform = "translateX(-50%) scale(0) rotate(0deg)";}, 200);
-
-  setTimeout(()=>{
-    coin.style.transform = "translateX(-50%)";
-    tapMsg.innerText = "";
-  }, 500);
 });
 </script>
 
