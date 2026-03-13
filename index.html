@@ -54,6 +54,7 @@ h1{
   margin-bottom:28px;
   color:#ccc;
   line-height:1.7;
+  text-align:left;
 }
 
 .description p{
@@ -117,6 +118,7 @@ button{
 .telegram{ background:#229ED9; color:white; }
 .form{ background:#f5a623; color:black; }
 .verify{ background:#22c55e; color:white; }
+.wallet{ background:#8b5cf6; color:white; }
 
 button:hover,
 .action-btn:hover{
@@ -173,7 +175,8 @@ button:disabled{
 }
 
 #statusMsg,
-#rewardMsg{
+#rewardMsg,
+#walletMsg{
   margin-top:14px;
   font-weight:bold;
   min-height:24px;
@@ -182,6 +185,7 @@ button:disabled{
 
 #statusMsg{ color:#f5a623; }
 #rewardMsg{ color:#22c55e; }
+#walletMsg{ color:#8b5cf6; }
 
 .link-row{
   display:flex;
@@ -293,109 +297,23 @@ button:disabled{
   animation:coinFloat 0.8s ease-out forwards;
 }
 
+.wallet-box{
+  background:#151515;
+  border-radius:12px;
+  padding:16px;
+  margin-top:12px;
+}
+
+.wallet-address{
+  margin-top:10px;
+  word-break:break-all;
+  color:#ddd;
+  font-size:14px;
+}
+
 @keyframes coinFloat{
   0%{ opacity:1; transform:translateY(0); }
   100%{ opacity:0; transform:translateY(-40px); }
-}
-
-@media (max-width: 768px){
-  .container{
-    width:calc(100% - 24px);
-    margin:18px auto 24px;
-    padding:22px 16px;
-    border-radius:14px;
-  }
-
-  h1{
-    font-size:30px;
-    letter-spacing:1px;
-  }
-
-  .subtitle{
-    font-size:16px;
-    margin:12px 0 18px;
-  }
-
-  .description{
-    padding:16px;
-    font-size:15px;
-    line-height:1.65;
-    margin-bottom:22px;
-  }
-
-  .step{
-    margin:24px 0;
-  }
-
-  .step h2{
-    font-size:28px;
-    margin-bottom:10px;
-  }
-
-  .step p{
-    font-size:15px;
-    margin-bottom:14px;
-  }
-
-  .link-row{
-    flex-direction:column;
-    gap:8px;
-  }
-
-  button,
-  .action-btn{
-    width:100%;
-    max-width:320px;
-    margin:4px 0;
-    padding:13px 16px;
-    font-size:15px;
-  }
-
-  #gameArea{ height:220px; }
-
-  #wolfCoin{
-    width:58px;
-    height:58px;
-    font-size:28px;
-  }
-}
-
-@media (max-width: 420px){
-  .container{
-    width:calc(100% - 16px);
-    padding:18px 12px;
-  }
-
-  h1{ font-size:24px; }
-  .subtitle{ font-size:15px; }
-
-  .description{
-    font-size:14px;
-    padding:14px;
-  }
-
-  .step h2{ font-size:24px; }
-
-  button,
-  .action-btn{
-    max-width:none;
-    width:100%;
-    font-size:14px;
-    padding:12px 14px;
-  }
-
-  #gameArea{ height:200px; }
-
-  #wolfCoin{
-    width:54px;
-    height:54px;
-    font-size:26px;
-  }
-
-  .stat-box{
-    min-width:100px;
-    font-size:13px;
-  }
 }
 </style>
 </head>
@@ -409,8 +327,8 @@ button:disabled{
 
   <div class="description">
     <p>Welcome to the <b>WOLF FAIR Genesis Event</b> – an exclusive giveaway for early supporters of the WOLF community.</p>
-    <p>Complete the social tasks below, unlock the WOLF hunt mini-game, and finish the event to claim your reward chance.</p>
-    <p>🎁 Total reward: <b>1000 $WOLF</b>. Rewards will be distributed once the WOLF token launches.</p>
+    <p>Complete all social tasks, finish the WOLF hunt mini-game, then connect your Phantom wallet to submit automatically.</p>
+    <p>🎁 Total reward pool: <b>1000 $WOLF</b>. Reward distribution will be handled after verification.</p>
   </div>
 
   <div class="step">
@@ -435,7 +353,7 @@ button:disabled{
 
   <div class="step" id="tapGameStep">
     <h2>Step 1.5</h2>
-    <p>Game is visible from the start, but only unlocks after all Step 1 tasks are complete.</p>
+    <p>Finish the WOLF hunt mini-game to unlock submission</p>
 
     <div class="game-wrap">
       <div class="game-stats">
@@ -458,14 +376,21 @@ button:disabled{
 
   <div class="step">
     <h2>Step 2</h2>
-    <p>Submit your reward after the game is complete</p>
+    <p>Connect Phantom wallet and submit automatically</p>
+
+    <div class="wallet-box">
+      <button id="connectWalletBtn" class="wallet" type="button">🔗 Connect Phantom Wallet</button>
+      <div id="walletMsg"></div>
+      <div id="walletAddress" class="wallet-address"></div>
+    </div>
+
     <button id="submitBtn" class="form" type="button" disabled>📋 Submit Reward</button>
     <div id="rewardMsg"></div>
   </div>
 
   <div class="reward">
     <h2>🎁 Reward</h2>
-    <p>1000 $WOLF tokens will be distributed among winners!</p>
+    <p>1000 $WOLF tokens will be distributed among verified winners!</p>
   </div>
 
   <div class="footer">WOLF FAIR • Join the pack & stay ready!</div>
@@ -475,7 +400,7 @@ button:disabled{
 (() => {
   "use strict";
 
-  const API_URL = "https://script.google.com/macros/s/AKfycbxJxwZL680cH-SDkS-fXDrsCVNZYGRCW7Y-ecCnhE9Z6xyVVr-zOd_e1B98ggNbYd17/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbwuoIhqDzVILwc4UaViMYNPpImsD04VNti2EqDc2gRIfMhn2K2NxXUDmDSQAd8DuFSr/exec";
   const COIN_TARGET = 1000;
   const COIN_PER_TAP = 5;
 
@@ -487,9 +412,12 @@ button:disabled{
     telegramChannelBtn: document.getElementById("telegramChannelBtn"),
     telegramGroupBtn: document.getElementById("telegramGroupBtn"),
     verifyBtn: document.getElementById("verifyBtn"),
+    connectWalletBtn: document.getElementById("connectWalletBtn"),
     submitBtn: document.getElementById("submitBtn"),
     statusMsg: document.getElementById("statusMsg"),
     rewardMsg: document.getElementById("rewardMsg"),
+    walletMsg: document.getElementById("walletMsg"),
+    walletAddress: document.getElementById("walletAddress"),
     tapGameStep: document.getElementById("tapGameStep"),
     gameArea: document.getElementById("gameArea"),
     wolfCoin: document.getElementById("wolfCoin"),
@@ -503,6 +431,7 @@ button:disabled{
   let gameRunning = false;
   let moveTimer = null;
   let lastTap = 0;
+  let connectedWallet = "";
 
   elements.coinTarget.textContent = COIN_TARGET;
   elements.tapValue.textContent = COIN_PER_TAP;
@@ -526,7 +455,8 @@ button:disabled{
       telegramGroup: false,
       tapCoins: 0,
       tapGameDone: false,
-      claimed: false
+      claimed: false,
+      wallet: ""
     };
   }
 
@@ -553,7 +483,8 @@ button:disabled{
       telegramGroup: !!status.telegramGroup,
       tapCoins: Math.max(0, Math.min(Number(status.tapCoins) || 0, COIN_TARGET)),
       tapGameDone: !!status.tapGameDone,
-      claimed: !!status.claimed
+      claimed: !!status.claimed,
+      wallet: status.wallet || ""
     }));
   }
 
@@ -567,6 +498,11 @@ button:disabled{
     elements.rewardMsg.style.color = isError ? "#ff6b6b" : "#22c55e";
   }
 
+  function setWalletMessage(message, isError = false) {
+    elements.walletMsg.textContent = message || "";
+    elements.walletMsg.style.color = isError ? "#ff6b6b" : "#8b5cf6";
+  }
+
   function isStep1Done(status) {
     return !!status.follow &&
       !!status.like &&
@@ -574,6 +510,11 @@ button:disabled{
       !!status.comment &&
       !!status.telegramChannel &&
       !!status.telegramGroup;
+  }
+
+  function shortWallet(address) {
+    if (!address) return "";
+    return address.slice(0, 6) + "..." + address.slice(-6);
   }
 
   function updateGameUI() {
@@ -585,7 +526,7 @@ button:disabled{
     elements.progressBar.style.width = progress + "%";
 
     if (status.tapGameDone) {
-      elements.gameInfo.textContent = "✅ WOLF hunt completed! Submit is unlocked.";
+      elements.gameInfo.textContent = "✅ WOLF hunt completed! Wallet connect and submit are unlocked.";
     } else if (isStep1Done(status)) {
       elements.gameInfo.textContent = "Tap the running WOLF until you reach 1000 coins.";
     } else {
@@ -660,6 +601,7 @@ button:disabled{
 
   function updateButtons() {
     const status = getStatus();
+    connectedWallet = status.wallet || "";
 
     elements.followBtn.classList.toggle("done", !!status.follow);
     elements.likeBtn.classList.toggle("done", !!status.like);
@@ -669,7 +611,8 @@ button:disabled{
     elements.telegramGroupBtn.classList.toggle("done", !!status.telegramGroup);
 
     const step1Done = isStep1Done(status);
-    const canSubmit = step1Done && !!status.tapGameDone && !status.claimed;
+    const walletConnected = !!connectedWallet;
+    const canSubmit = step1Done && !!status.tapGameDone && walletConnected && !status.claimed;
 
     elements.tapGameStep.style.display = "block";
     startGame();
@@ -682,6 +625,16 @@ button:disabled{
       elements.wolfCoin.style.opacity = "1";
       elements.wolfCoin.style.filter = "none";
       elements.wolfCoin.style.cursor = "pointer";
+    }
+
+    if (walletConnected) {
+      elements.walletAddress.textContent = "Connected wallet: " + shortWallet(connectedWallet);
+      elements.connectWalletBtn.textContent = "✅ Wallet Connected";
+      elements.connectWalletBtn.classList.add("done");
+    } else {
+      elements.walletAddress.textContent = "";
+      elements.connectWalletBtn.textContent = "🔗 Connect Phantom Wallet";
+      elements.connectWalletBtn.classList.remove("done");
     }
 
     if (status.claimed) {
@@ -747,6 +700,31 @@ button:disabled{
     updateButtons();
   }
 
+  async function connectPhantomWallet() {
+    try {
+      const provider = window.phantom?.solana || window.solana;
+
+      if (!provider || !provider.isPhantom) {
+        setWalletMessage("Phantom wallet not detected. Open this page in Phantom browser or use Phantom extension.", true);
+        return;
+      }
+
+      const response = await provider.connect();
+      const walletAddress = response.publicKey.toString();
+
+      const status = getStatus();
+      status.wallet = walletAddress;
+      saveStatus(status);
+
+      connectedWallet = walletAddress;
+      setWalletMessage("✅ Phantom wallet connected.");
+      updateButtons();
+    } catch (error) {
+      console.error(error);
+      setWalletMessage("Wallet connection failed.", true);
+    }
+  }
+
   async function submitReward() {
     const status = getStatus();
 
@@ -755,20 +733,18 @@ button:disabled{
       return;
     }
 
+    if (!status.wallet) {
+      setRewardMessage("Connect Phantom wallet first.", true);
+      return;
+    }
+
     if (status.claimed) {
       setRewardMessage("Reward already submitted on this browser.", true);
       return;
     }
 
-    const wallet = prompt("Enter your Phantom wallet:");
-
-    if (!wallet || wallet.trim().length < 20) {
-      setRewardMessage("Invalid wallet address.", true);
-      return;
-    }
-
     const payload = {
-      wallet: wallet.trim(),
+      wallet: status.wallet,
       coins: status.tapCoins,
       like: status.like,
       retweet: status.retweet,
@@ -788,6 +764,10 @@ button:disabled{
         body: JSON.stringify(payload)
       });
 
+      const text = await res.text();
+      console.log("STATUS:", res.status);
+      console.log("RESPONSE:", text);
+
       if (!res.ok) {
         throw new Error("Request failed");
       }
@@ -795,15 +775,15 @@ button:disabled{
       status.claimed = true;
       saveStatus(status);
       updateButtons();
-
       setRewardMessage("✅ Reward submitted successfully!");
     } catch (err) {
-      setRewardMessage("Submission failed. Try again.", true);
       console.error(err);
+      setRewardMessage("Submission failed. Try again.", true);
     }
   }
 
   elements.verifyBtn.addEventListener("click", verifyActions);
+  elements.connectWalletBtn.addEventListener("click", connectPhantomWallet);
   elements.submitBtn.addEventListener("click", submitReward);
   elements.wolfCoin.addEventListener("click", handleWolfTap);
   elements.wolfCoin.addEventListener("touchstart", (e) => {
@@ -824,12 +804,7 @@ button:disabled{
   if (!canvas || typeof THREE === "undefined") return;
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(
-    75,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    1000
-  );
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
   const renderer = new THREE.WebGLRenderer({
     canvas,
