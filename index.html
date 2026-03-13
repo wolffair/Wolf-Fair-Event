@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -482,7 +481,7 @@ button:disabled{
   const API_URL = "https://script.google.com/macros/s/AKfycby3ZVcdDuPYfTsWHMlFBj2qhK1t24Y8bNNafTN6ht3QFwxHD3dzvbBfrTpwMfa7z7MV/exec";
   const COIN_TARGET = 1000;
   const COIN_PER_TAP = 5;
-  const WALLET_REGEX = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+  const REQUEST_TIMEOUT_MS = 15000;
 
   const elements = {
     followBtn: document.getElementById("followBtn"),
@@ -595,7 +594,7 @@ button:disabled{
     } else if (isStep1Done(status)) {
       elements.gameInfo.textContent = "Tap the running WOLF until you reach 1000 coins.";
     } else {
-      elements.gameInfo.textContent = "🔒 Complete all Step 1 tasks first to unlock the WOLF hunt.";
+      elements.gameInfo.textContent = "🔒 Complete Step 1 first to unlock the WOLF hunt.";
     }
   }
 
@@ -776,15 +775,15 @@ button:disabled{
 
     const wallet = prompt("Enter your Phantom / Solana wallet address:");
 
-    if (!wallet) {
+    if (wallet === null) {
       setRewardMessage("Wallet input cancelled.", true);
       return;
     }
 
     const trimmedWallet = wallet.trim();
 
-    if (!WALLET_REGEX.test(trimmedWallet)) {
-      setRewardMessage("Invalid Solana wallet address.", true);
+    if (trimmedWallet.length < 20) {
+      setRewardMessage("Wallet address too short.", true);
       return;
     }
 
@@ -802,32 +801,49 @@ button:disabled{
     isSubmitting = true;
     updateButtons();
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
     try {
       const res = await fetch(API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "text/plain;charset=utf-8"
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+        redirect: "follow"
       });
 
       const text = await res.text();
       console.log("STATUS:", res.status);
       console.log("RESPONSE:", text);
 
-      if (!res.ok) {
-        throw new Error(text || "Request failed");
-      }
+      let success = false;
+      let message = "";
 
-      let result = null;
       try {
-        result = JSON.parse(text);
+        const parsed = JSON.parse(text);
+        success =
+          parsed?.status === "success" ||
+          parsed?.result === "success" ||
+          parsed?.success === true ||
+          parsed?.ok === true;
+        message = parsed?.message || "";
       } catch (_) {
-        result = null;
+        const normalized = (text || "").toLowerCase();
+        success =
+          res.ok &&
+          (
+            normalized.includes("success") ||
+            normalized.includes("saved") ||
+            normalized.includes("ok")
+          );
+        message = text || "";
       }
 
-      if (result && result.status && result.status !== "success") {
-        throw new Error(result.message || "Apps Script error");
+      if (!res.ok || !success) {
+        throw new Error(message || "Request failed");
       }
 
       status.claimed = true;
@@ -835,8 +851,13 @@ button:disabled{
       setRewardMessage("✅ Reward submitted successfully!");
     } catch (err) {
       console.error(err);
-      setRewardMessage("Submission failed. Check Apps Script log and try again.", true);
+      if (err && err.name === "AbortError") {
+        setRewardMessage("Submission timeout. Try again.", true);
+      } else {
+        setRewardMessage("Submission failed. Try again.", true);
+      }
     } finally {
+      clearTimeout(timeoutId);
       isSubmitting = false;
       updateButtons();
     }
@@ -844,11 +865,9 @@ button:disabled{
 
   elements.verifyBtn.addEventListener("click", verifyActions);
   elements.submitBtn.addEventListener("click", submitReward);
-  elements.wolfCoin.addEventListener("touchstart", (e) => {
-  const touch = e.touches[0];
-  handleWolfTap({ clientX: touch.clientX, clientY: touch.clientY });
-}, { passive: true }); 
-}, { passive: true });
+  elements.wolfCoin.addEventListener("pointerdown", (e) => {
+    handleWolfTap({ clientX: e.clientX, clientY: e.clientY });
+  }, { passive: true });
 
   updateButtons();
 })();
