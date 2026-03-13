@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>WOLF FAIR Genesis Giveaway</title>
 <style>
 *{ box-sizing:border-box; }
@@ -475,7 +475,6 @@ button:disabled{
 (() => {
   "use strict";
 
-  const REWARD = 1000;
   const API_URL = "https://script.google.com/macros/s/AKfycby3ZVcdDuPYfTsWHMlFBj2qhK1t24Y8bNNafTN6ht3QFwxHD3dzvbBfrTpwMfa7z7MV/exec";
   const COIN_TARGET = 1000;
   const COIN_PER_TAP = 5;
@@ -504,6 +503,7 @@ button:disabled{
   let gameRunning = false;
   let moveTimer = null;
   let lastTap = 0;
+  let isSubmitting = false;
 
   elements.coinTarget.textContent = COIN_TARGET;
   elements.tapValue.textContent = COIN_PER_TAP;
@@ -670,7 +670,7 @@ button:disabled{
     elements.telegramGroupBtn.classList.toggle("done", !!status.telegramGroup);
 
     const step1Done = isStep1Done(status);
-    const canSubmit = step1Done && !!status.tapGameDone && !status.claimed;
+    const canSubmit = step1Done && !!status.tapGameDone && !status.claimed && !isSubmitting;
 
     elements.tapGameStep.style.display = "block";
     startGame();
@@ -688,6 +688,10 @@ button:disabled{
     if (status.claimed) {
       elements.submitBtn.classList.add("done");
       elements.submitBtn.textContent = "✅ Reward Submitted";
+      elements.submitBtn.disabled = true;
+    } else if (isSubmitting) {
+      elements.submitBtn.classList.remove("done");
+      elements.submitBtn.textContent = "Submitting...";
       elements.submitBtn.disabled = true;
     } else {
       elements.submitBtn.classList.remove("done");
@@ -763,13 +767,20 @@ button:disabled{
 
     const wallet = prompt("Enter your Phantom wallet:");
 
-    if (!wallet || wallet.trim().length < 20) {
+    if (!wallet) {
+      setRewardMessage("Wallet input cancelled.", true);
+      return;
+    }
+
+    const trimmedWallet = wallet.trim();
+
+    if (trimmedWallet.length < 20 || trimmedWallet.length > 60) {
       setRewardMessage("Invalid wallet address.", true);
       return;
     }
 
     const payload = {
-      wallet: wallet.trim(),
+      wallet: trimmedWallet,
       coins: status.tapCoins,
       like: status.like,
       retweet: status.retweet,
@@ -779,28 +790,41 @@ button:disabled{
     };
 
     setRewardMessage("Submitting reward...");
+    isSubmitting = true;
+    updateButtons();
 
     try {
       const res = await fetch(API_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8"
-        },
         body: JSON.stringify(payload)
       });
 
+      const text = await res.text();
+      console.log("STATUS:", res.status);
+      console.log("RESPONSE:", text);
+
       if (!res.ok) {
-        throw new Error("Request failed");
+        throw new Error(text || "Request failed");
+      }
+
+      let result = {};
+      try {
+        result = JSON.parse(text);
+      } catch (e) {}
+
+      if (result.status && result.status !== "success") {
+        throw new Error(result.message || "Apps Script error");
       }
 
       status.claimed = true;
       saveStatus(status);
-      updateButtons();
-
       setRewardMessage("✅ Reward submitted successfully!");
     } catch (err) {
-      setRewardMessage("Submission failed. Try again.", true);
       console.error(err);
+      setRewardMessage("Submission failed. Try again.", true);
+    } finally {
+      isSubmitting = false;
+      updateButtons();
     }
   }
 
