@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>WOLF FAIR Genesis Early Supporter Campaign</title>
+<title>WOLF FAIR Genesis Supporter Registration</title>
 <style>
 *{ box-sizing:border-box; }
 
@@ -407,12 +407,12 @@ button:disabled{
 
 <div class="container">
   <h1>🐺 WOLF FAIR</h1>
-  <p class="subtitle">Genesis Early Supporter Campaign</p>
+  <p class="subtitle">Genesis Supporter Registration</p>
 
   <div class="description">
-    <p>Welcome to the <b>WOLF FAIR Genesis Event</b> – an exclusive campaign for early supporters of the WOLF community.</p>
-    <p>Complete all required social tasks, finish the WOLF hunt mini-game, and submit your Solana wallet to join the early supporter list.</p>
-    <p>🎁 <b>Selected early supporters may be eligible for future $WOLF distribution after launch.</b></p>
+    <p>Welcome to the <b>WOLF FAIR Genesis Event</b> – an exclusive registration campaign for early supporters of the WOLF community.</p>
+    <p>Complete all required social tasks, finish the WOLF hunt mini-game, and register your Solana wallet to join the early supporter list.</p>
+    <p>🎁 <b>Selected early supporters may receive priority consideration for future community rewards, whitelist access, and launch-related updates.</b></p>
     <p><b>Important:</b> Use your correct Phantom/Solana wallet address when submitting. One browser session is intended for one entry.</p>
   </div>
 
@@ -468,7 +468,7 @@ button:disabled{
 
   <div class="reward">
     <h2>🎁 Early Supporter Note</h2>
-    <p>Selected early supporters may be eligible for future $WOLF distribution after launch.</p>
+    <p>Selected early supporters may receive priority consideration for future community rewards, whitelist access, and launch-related updates.</p>
   </div>
 
   <div class="footer">WOLF FAIR • Join the pack & stay ready!</div>
@@ -773,7 +773,7 @@ button:disabled{
       return;
     }
 
-    const wallet = prompt("Enter your Phantom / Solana wallet address:");
+    const wallet = prompt("Enter your Phantom / Solana wallet address to join the early supporter list:");
 
     if (!wallet) {
       setRewardMessage("Wallet input cancelled.", true);
@@ -831,7 +831,7 @@ button:disabled{
 
       status.claimed = true;
       saveStatus(status);
-      setRewardMessage("✅ Early Supporter Registered!");
+      setRewardMessage("✅ Supporter entry registered successfully!");
     } catch (err) {
       console.error(err);
       setRewardMessage("Submission failed: " + (err.message || "Unknown error"), true);
