@@ -810,23 +810,23 @@ button:disabled{
         body: JSON.stringify(payload)
       });
 
-      const text = await res.text();
+      const rawText = await res.text();
       console.log("STATUS:", res.status);
-      console.log("RESPONSE:", text);
+      console.log("RESPONSE:", rawText);
 
       if (!res.ok) {
-        throw new Error(text || "Request failed");
+        throw new Error("HTTP " + res.status + " - " + rawText);
       }
 
-      let result = null;
+      let result;
       try {
-        result = JSON.parse(text);
-      } catch (_) {
-        result = null;
+        result = JSON.parse(rawText);
+      } catch (parseError) {
+        throw new Error("Response is not valid JSON: " + rawText);
       }
 
-      if (result && result.status && result.status !== "success") {
-        throw new Error(result.message || "Apps Script error");
+      if (!result || result.status !== "success") {
+        throw new Error(result?.message || "Apps Script returned invalid response");
       }
 
       status.claimed = true;
@@ -834,7 +834,7 @@ button:disabled{
       setRewardMessage("✅ Reward submitted successfully!");
     } catch (err) {
       console.error(err);
-      setRewardMessage("Submission failed. Check Apps Script log and try again.", true);
+      setRewardMessage("Submission failed: " + (err.message || "Unknown error"), true);
     } finally {
       isSubmitting = false;
       updateButtons();
