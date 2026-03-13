@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>WOLF FAIR Genesis Giveaway</title>
+<title>WOLF FAIR Genesis Early Supporter Campaign</title>
 <style>
 *{ box-sizing:border-box; }
 
@@ -407,13 +407,13 @@ button:disabled{
 
 <div class="container">
   <h1>🐺 WOLF FAIR</h1>
-  <p class="subtitle">Genesis $WOLF Giveaway</p>
+  <p class="subtitle">Genesis Early Supporter Campaign</p>
 
   <div class="description">
-    <p>Welcome to the <b>WOLF FAIR Genesis Event</b> – an exclusive giveaway for early supporters of the WOLF community.</p>
-    <p>Complete all required social tasks, finish the WOLF hunt mini-game, and submit your Solana wallet to join the giveaway pool.</p>
-    <p>🎁 Total reward pool: <b>1000 $WOLF</b>. Rewards will be distributed after project verification and token launch.</p>
-    <p><b>Important:</b> Use your correct Phantom/Solana wallet address when submitting. One browser session is intended for one claim.</p>
+    <p>Welcome to the <b>WOLF FAIR Genesis Event</b> – an exclusive campaign for early supporters of the WOLF community.</p>
+    <p>Complete all required social tasks, finish the WOLF hunt mini-game, and submit your Solana wallet to join the early supporter list.</p>
+    <p>🎁 <b>Selected early supporters may be eligible for future $WOLF distribution after launch.</b></p>
+    <p><b>Important:</b> Use your correct Phantom/Solana wallet address when submitting. One browser session is intended for one entry.</p>
   </div>
 
   <div class="step">
@@ -438,7 +438,7 @@ button:disabled{
 
   <div class="step" id="tapGameStep">
     <h2>Step 1.5</h2>
-    <p>Finish the mini-game to unlock reward submission</p>
+    <p>Finish the mini-game to unlock wallet registration</p>
 
     <div class="game-wrap">
       <div class="game-stats">
@@ -461,14 +461,14 @@ button:disabled{
 
   <div class="step">
     <h2>Step 2</h2>
-    <p>Submit your reward after the game is complete</p>
-    <button id="submitBtn" class="form" type="button" disabled>📋 Submit Reward</button>
+    <p>Register your wallet after the game is complete</p>
+    <button id="submitBtn" class="form" type="button" disabled>📋 Register Wallet</button>
     <div id="rewardMsg"></div>
   </div>
 
   <div class="reward">
-    <h2>🎁 Reward</h2>
-    <p>1000 $WOLF tokens will be distributed among selected winners.</p>
+    <h2>🎁 Early Supporter Note</h2>
+    <p>Selected early supporters may be eligible for future $WOLF distribution after launch.</p>
   </div>
 
   <div class="footer">WOLF FAIR • Join the pack & stay ready!</div>
@@ -590,7 +590,7 @@ button:disabled{
     elements.progressBar.style.width = progress + "%";
 
     if (status.tapGameDone) {
-      elements.gameInfo.textContent = "✅ WOLF hunt completed! Submit is unlocked.";
+      elements.gameInfo.textContent = "✅ WOLF hunt completed! Wallet registration is unlocked.";
     } else if (isStep1Done(status)) {
       elements.gameInfo.textContent = "Tap the running WOLF until you reach 1000 coins.";
     } else {
@@ -690,7 +690,7 @@ button:disabled{
 
     if (status.claimed) {
       elements.submitBtn.classList.add("done");
-      elements.submitBtn.textContent = "✅ Reward Submitted";
+      elements.submitBtn.textContent = "✅ Entry Submitted";
       elements.submitBtn.disabled = true;
     } else if (isSubmitting) {
       elements.submitBtn.classList.remove("done");
@@ -698,7 +698,7 @@ button:disabled{
       elements.submitBtn.disabled = true;
     } else {
       elements.submitBtn.classList.remove("done");
-      elements.submitBtn.textContent = "📋 Submit Reward";
+      elements.submitBtn.textContent = "📋 Register Wallet";
       elements.submitBtn.disabled = !canSubmit;
     }
 
@@ -769,7 +769,7 @@ button:disabled{
     }
 
     if (status.claimed) {
-      setRewardMessage("Reward already submitted on this browser.", true);
+      setRewardMessage("Entry already submitted on this browser.", true);
       return;
     }
 
@@ -797,7 +797,7 @@ button:disabled{
       tg_group: status.telegramGroup
     };
 
-    setRewardMessage("Submitting reward...");
+    setRewardMessage("Submitting entry...");
     isSubmitting = true;
     updateButtons();
 
@@ -831,7 +831,7 @@ button:disabled{
 
       status.claimed = true;
       saveStatus(status);
-      setRewardMessage("✅ Reward submitted successfully!");
+      setRewardMessage("✅ Early Supporter Registered!");
     } catch (err) {
       console.error(err);
       setRewardMessage("Submission failed: " + (err.message || "Unknown error"), true);
